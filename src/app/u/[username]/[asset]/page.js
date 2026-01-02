@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
 		openGraph: {
 			title: item.header,
 			description: item.desc_value || 'No description.',
-			url: `https://axiomassets.net/asset/${item.uuid}`,
+			url: `https://axiomassets.net/u/${item.publisherData.username}/${item.uuid}`,
 			type: 'article',
 			publishedTime: dateCreated,
 			authors: [item.publisherData.username],
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }) {
 			images: [`https://cdn.axiomassets.net/thumbnail/${item.uuid}/thumb.webp`],
 		},
 		alternates: {
-			canonical: `https://axiomassets.net/asset/${item.uuid}`,
+			canonical: `https://axiomassets.net/u/${item.publisherData.username}/${item.uuid}`,
 		},
 	};
 }

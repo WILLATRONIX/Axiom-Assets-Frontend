@@ -10,6 +10,19 @@ const nextConfig = {
 			},
 		];
 	},
+
+	async rewrites() {
+		return [
+			{
+				source: '/.well-known/microsoft-identity-association',
+				destination: '/.well-known/microsoft-identity-association.json',
+			},
+			{
+				source: '/.well-known/microsoft-identity-association/',
+				destination: '/.well-known/microsoft-identity-association.json',
+			},
+		];
+	},
 };
 
 export default nextConfig;

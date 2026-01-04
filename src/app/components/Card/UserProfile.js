@@ -2,12 +2,14 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { useRouter } from 'next/navigation';
-import { useAuth } from 'lib/auth/authContext.js';
 import { notFound } from 'next/navigation';
 
-import AssetGrid from 'components/Grid/AssetGrid';
+import { useAuth } from 'lib/auth/authContext.js';
+import { getFilter, setFilter, subscribeFilter, resetFilter } from 'lib/searchFilter';
 import { post } from 'lib/network';
+
+import DebouncedInput from 'components/Input/DebouncedInput';
+import AssetGrid from 'components/Grid/AssetGrid';
 
 import Box from '@mui/joy/Box';
 import Divider from '@mui/joy/Divider';
@@ -32,20 +34,14 @@ function App({ userName }) {
 
 	const [userBadges, setUserBadges] = useState([]);
 
-	const [viewType, setViewType] = useState('grid');
 	const [assetView, setAssetView] = useState('owned');
+	const [searchFilter, setSearchFilter] = useState();
 
-	const [windowWidth, setWindowWidth] = useState(0);
-	const [windowHeight, setWindowHeight] = useState(0);
+	const [searchInputValue, setSearchInputValue] = useState('');
 
-	const [filterQuery, setFilterQuery] = useState({
-		publisherData: { username: userName },
-		type: 'all',
-		header: '',
-		order: [['date_created', 'DESC']],
-	});
+	const [sortBy, setSortBy] = useState('date_created');
+	const [sortOrder, setSortOrder] = useState('desc');
 
-	const router = useRouter();
 	const { user, loadingUser } = useAuth();
 
 	const badgeMappings = {
@@ -80,29 +76,6 @@ function App({ userName }) {
 		setUserBadges((prev) => [...prev, ...badges]);
 	};
 
-	const changeAssetView = (to) => {
-		let newQuery;
-
-		switch (to) {
-			case 'saved':
-				newQuery = {
-					order: [['date_created', 'DESC']],
-					isSaved: true,
-				};
-				break;
-			case 'owned':
-				newQuery = {
-					publisher: userData.uuid,
-					order: [['date_created', 'DESC']],
-				};
-				break;
-			default:
-				console.warn(`Unknown view type: ${to}`);
-		}
-
-		setFilterQuery(newQuery);
-	};
-
 	const getRelativeTime = (date) => {
 		const parsedDate = new Date(date);
 		return formatDistanceToNow(parsedDate, { addSuffix: true }).replace(/^about\s/, '');
@@ -122,51 +95,50 @@ function App({ userName }) {
 		return <span>{relativeTime}</span>;
 	};
 
-	const handleFilterChange = (data) => {
-		let displayOptions = JSON.parse(localStorage.getItem('do')) || {};
+	const handleDebouncedSearch = (event) => {
+		const newValue = event.target.value.trim();
+		const current = getFilter();
 
-		if (data.viewType !== undefined && data.viewType !== viewType) {
-			displayOptions.viewType = data.viewType;
-			setViewType(data.viewType);
-		}
+		const baseFilter = [
+			{ field: 'visibility', op: 'eq', value: 'public' },
+			{ field: 'publisher.username', op: 'eq', value: userName },
+		];
 
-		if (data.type !== undefined && data.type !== null) {
-			displayOptions.itemType = data.type;
-			setItemType(data.type);
-		}
+		const newFilter = {
+			...current,
+			filter:
+				newValue === ''
+					? { and: baseFilter }
+					: { and: [...baseFilter, { field: 'header', op: 'like', value: newValue }] },
+		};
 
-		localStorage.setItem('do', JSON.stringify(displayOptions));
-
-		setFilterQuery({
-			header: data.header,
-			order: [[data.sortBy || filterQuery.order[0][0], data.sortOrder || filterQuery.order[0][1]]],
-			type: data.type ?? itemType,
-			tags: data.tags,
-			tools: data.tools,
-		});
+		setFilter(newFilter);
 	};
+
+	const handleSortByChange = (event, newValue) => {
+		const current = getFilter();
+		const newFilter = {
+			...current,
+			sort: [{ field: newValue, direction: sortOrder }],
+		};
+		setSortBy(newValue);
+		setFilter(newFilter);
+	};
+
+	useEffect(() => {
+		const unsubscribe = subscribeFilter((newFilter) => {
+			setSearchFilter(newFilter);
+			setSortBy(newFilter.sort[0]?.field || 'date_created');
+			setSortOrder(newFilter.sort[0]?.direction || 'desc');
+		});
+		return () => unsubscribe();
+	}, []);
 
 	useEffect(() => {
 		if (user && !loadingUser) {
 			setViewerUUID(user.uuid);
 		}
 	}, [user, loadingUser]);
-
-	useEffect(() => {
-		const handleResize = () => {
-			const sidebarWidth = 330;
-			setWindowWidth(window.innerWidth - sidebarWidth - 17);
-			setWindowHeight(window.outerHeight);
-		};
-
-		handleResize();
-
-		window.addEventListener('resize', handleResize);
-
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
 
 	useEffect(() => {
 		if (window.location.hash == '#saved' && viewerUUID === userData) {
@@ -209,6 +181,19 @@ function App({ userName }) {
 		if (!userData) {
 			getUserInfo({ username: userName });
 		}
+	}, []);
+
+	useEffect(() => {
+		const currentFilter = getFilter()
+		setFilter({
+			...currentFilter,
+			filter: {
+				and: [
+					{ field: 'visibility', op: 'eq', value: 'public' },
+					{ field: 'publisher.username', op: 'eq', value: userName },
+				],
+			},
+		});
 	}, []);
 
 	if (!validUser) {
@@ -390,32 +375,26 @@ function App({ userName }) {
 								justifyContent: 'end',
 							}}
 						>
-							<Input
-								variant="soft"
-								placeholder="Search..."
-								sx={{ width: '100%' }}
-								onChange={(e) => {
-									setFilterQuery((prev) => ({
-										...prev,
-										header: e.target.value,
-									}));
+							<DebouncedInput
+								placeholder="Search"
+								sx={{
+									width: '100%',
+									// pl: 0,
+									backgroundColor:
+										'color-mix(in srgb, var(--joy-palette-neutral-softBg) 100%, transparent 30%)',
 								}}
+								variant="soft"
+								debounceTimeout={200}
+								value={searchInputValue}
+								onChange={(event) => setSearchInputValue(event.target.value)}
+								onDebounce={handleDebouncedSearch}
 							/>
-							<Select
-								variant="soft"
-								value={filterQuery.order[0][0]}
-								sx={{ flexShrink: 0 }}
-								onChange={(e, newValue) => {
-									setFilterQuery((prev) => ({
-										...prev,
-										order: [[newValue, prev.order[0][1]]],
-									}));
-								}}
-							>
+							<Select variant="soft" value={sortBy} sx={{ flexShrink: 0 }} onChange={handleSortByChange}>
 								<Option value="downloads">Downloads</Option>
 								<Option value="saves">Saves</Option>
 								<Option value="date_created">Latest</Option>
 								<Option value="metric">Size</Option>
+								<Option value="header">Title</Option>
 							</Select>
 							{viewerUUID === userData && (
 								<ToggleButtonGroup
@@ -433,9 +412,17 @@ function App({ userName }) {
 						</Box>
 						<AssetGrid
 							itemWidth={200}
-							filterQuery={filterQuery}
 							highlightSearchMatch={false}
-							handleFilterChange={handleFilterChange}
+							// filterOverride={{
+							// 	filter: {
+							// 		and: [
+							// 			{ field: 'visibility', op: 'eq', value: 'public' },
+							// 			{ field: 'publisher.username', op: 'eq', value: userName },
+							// 		],
+							// 	},
+							// 	sort: [{ field: 'date_created', direction: 'desc' }],
+							// 	savedOnly: false,
+							// }}
 						/>
 					</Box>
 				</Box>

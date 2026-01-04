@@ -32,15 +32,14 @@ import ShareIcon from '@mui/icons-material/ShareOutlined';
 
 function AssetGrid({
 	itemWidth = 200,
-	filterQuery = null,
 	readyToLoad = true,
-	handleFilterChange = () => {},
 	highlightSearchMatch = false,
 	defaultItems = [],
 	disableExpandItem = false,
 	optionsOverride = null,
 	initialAssetData = { rows: [], count: 0 },
 	totalItemLimit = Number.MAX_SAFE_INTEGER,
+	filterOverride = null,
 }) {
 	const [assets, setAssets] = useState(initialAssetData.rows);
 	const [totalItemCount, setTotalItemCount] = useState(initialAssetData.count);
@@ -310,10 +309,12 @@ function AssetGrid({
 
 		setIsLoading(true);
 
+		const selectedFilter = filterOverride || searchFilter;
+		
 		const res = await get('/browse/get-assets', {
 			params: {
 				flags: JSON.stringify({
-					...searchFilter,
+					...selectedFilter,
 					offset: index,
 					limit: adjustedFetchLimit,
 				}),
@@ -347,7 +348,7 @@ function AssetGrid({
 		setIndex((prev) => prev + adjustedFetchLimit);
 
 		setIsLoading(false);
-	}, [isLoading, index, fetchItemsLimit, hasNoItems, filterQuery]);
+	}, [isLoading, index, fetchItemsLimit, hasNoItems]);
 
 	useEffect(() => {
 		if (hasInitialAssets) {
@@ -368,16 +369,10 @@ function AssetGrid({
 	}, [initialAssetData.count, hasInitialAssets]);
 
 	useEffect(() => {
-		if (filterQuery && !hasInitialAssets) {
-			clearItems();
-		}
-	}, [filterQuery]);
-
-	useEffect(() => {
-		if (filterQuery === null && defaultItems.length > 0) {
+		if (defaultItems.length > 0) {
 			setAssets(defaultItems);
 		}
-	}, [filterQuery, defaultItems]);
+	}, [defaultItems]);
 
 	useEffect(() => {
 		let shownSuggestLogin = JSON.parse(localStorage.getItem('shownSuggestLogin')) || false;
@@ -391,7 +386,7 @@ function AssetGrid({
 		const runObserver = () => {
 			const observer = new IntersectionObserver(
 				(entries) => {
-					if (entries[0].isIntersecting && readyToLoad && !hasNoItems && filterQuery !== null) {
+					if (entries[0].isIntersecting && readyToLoad && !hasNoItems) {
 						fetchData();
 					}
 				},
@@ -416,7 +411,7 @@ function AssetGrid({
 			observer.disconnect();
 			clearInterval(interval);
 		};
-	}, [fetchData, filterQuery]);
+	}, [fetchData]);
 
 	return (
 		<>
@@ -432,7 +427,7 @@ function AssetGrid({
 			>
 				{assets.map((item, i) => {
 					const skip = defaultItems.some((di) => di.uuid === item.uuid);
-					if (skip && filterQuery !== null) return;
+					if (skip) return;
 
 					const editPerms = userData.uuid === item.publisher || userData.permission_level === 0;
 					const itemId = item.uuid ?? item.fileName;
@@ -483,7 +478,6 @@ function AssetGrid({
 								item={item}
 								baseDiameter={itemWidth}
 								itemDiameter={adjustedWidth}
-								filterQuery={filterQuery}
 								highlightSearchMatch={highlightSearchMatch}
 								userData={{ ...userData, canManageAsset: editPerms, userLoggedIn }}
 								handleDeleteClick={handleDeleteClick}

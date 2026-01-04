@@ -42,7 +42,6 @@ const ItemCard = ({
 	item,
 	itemDiameter,
 	baseDiameter,
-	filterQuery,
 	highlightSearchMatch = false,
 	userData,
 	dropdownOptions = [],
@@ -782,20 +781,18 @@ const ItemCard = ({
 							href={`/u/${item.publisherData.username}/${item.uuid}`}
 							style={{
 								textDecoration: 'none',
-								width: 'fit-content',
+								width: '100%',
+								display: 'block',
 							}}
-							onClick={(e) => {
-								e.stopPropagation();
-							}}
+							onClick={(e) => e.stopPropagation()}
 						>
 							<Typography
 								level="body-sm"
 								sx={{
-									color: 'text.primary',
+									color: isTheme ? themeData.Text : 'text.primary',
 									overflow: 'hidden',
 									textOverflow: 'ellipsis',
 									whiteSpace: 'nowrap',
-									color: isTheme ? themeData.Text : 'text.primary',
 									mr: 0.5,
 									'&:hover': {
 										color: isTheme ? themeData.Text : 'text.primary',
@@ -803,10 +800,7 @@ const ItemCard = ({
 									},
 								}}
 							>
-								<SearchMatchText
-									highlight={highlightSearchMatch ? filterQuery?.header : ''}
-									text={item.header}
-								/>
+								<SearchMatchText highlight={highlightSearchMatch ? '' : ''} text={item.header} />
 							</Typography>
 						</NextLink>
 
@@ -838,7 +832,7 @@ const ItemCard = ({
 							>
 								{item.publisherData.is_creator && <VerifiedIcon />}
 								<SearchMatchText
-									highlight={highlightSearchMatch ? filterQuery?.publisherData.display_name : ''}
+									highlight={highlightSearchMatch ? '' : ''}
 									text={item.publisherData.display_name}
 								/>
 							</Typography>

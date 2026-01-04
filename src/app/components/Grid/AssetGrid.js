@@ -199,14 +199,13 @@ function AssetGrid({
 			});
 			if (response.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = await response.blob();
+				const blob = response.data;
 
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
 				link.click();
-
 				document.body.removeChild(link);
 			} else {
 				console.error(`Download failed (${item.uuid}/blueprint.bp`);
@@ -236,10 +235,11 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = await res.blob();
+				const blob = response.data;
+
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = `${item.header}.nbt`;
+				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
@@ -258,7 +258,7 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = await res.blob();
+				const blob = response.data;
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.zip`;

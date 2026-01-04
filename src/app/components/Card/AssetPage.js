@@ -106,20 +106,21 @@ function App({ item }) {
 	const handleDownloadBlueprint = async (event) => {
 		event.stopPropagation();
 		try {
-			const response = await get(`https://cdn.axiomassets.net/blueprint/${assetData.uuid}/blueprint.bp`);
-			await get(`${process.env.NEXT_PUBLIC_API_URL}/download/${assetData.uuid}/none`);
+			const response = await get(`/blueprint/${item.uuid}/blueprint.bp`, {
+				baseURL: 'https://cdn.axiomassets.net',
+			});
 			if (response.ok) {
-				const blob = await response.blob();
+				await get(`/download/${item.uuid}/none`);
+				const blob = response.data;
 
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = `${assetData.header}.bp`;
+				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
 				link.click();
-
 				document.body.removeChild(link);
 			} else {
-				console.error(`Download failed (${assetData.uuid}/blueprint.bp`);
+				console.error(`Download failed (${item.uuid}/blueprint.bp`);
 			}
 		} catch (error) {
 			console.error('Failed to download: ', error);
@@ -178,17 +179,19 @@ function App({ item }) {
 	const handleDownloadPreset = async (event) => {
 		event.stopPropagation();
 		try {
-			const res = await get(`https://cdn.axiomassets.net/preset/${assetData.uuid}/preset.nbt`);
-			await get(`${process.env.NEXT_PUBLIC_API_URL}/download/${assetData.uuid}/none`);
+			const res = await get(`/preset/${item.uuid}/preset.nbt`, {
+				baseURL: 'https://cdn.axiomassets.net',
+			});
 			if (res.ok) {
-				const blob = await res.blob();
+				await get(`/download/${item.uuid}/none`);
+				const blob = response.data;
+
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = `${assetData.header}.nbt`;
+				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
-				setAssetDownloadCount((prev) => prev + 1);
 			} else {
 				notify('Failed to download preset', 'danger');
 			}
@@ -200,17 +203,18 @@ function App({ item }) {
 	const handleDownloadAssetPack = async (event) => {
 		event.stopPropagation();
 		try {
-			const res = await get(`https://cdn.axiomassets.net/asset-pack/${assetData.uuid}/pack.zip`);
-			await get(`${process.env.NEXT_PUBLIC_API_URL}/download/${assetData.uuid}/none`);
+			const res = await get(`/asset-pack/${item.uuid}/pack.zip`, {
+				baseURL: 'https://cdn.axiomassets.net',
+			});
 			if (res.ok) {
-				const blob = await res.blob();
+				await get(`/download/${item.uuid}/none`);
+				const blob = response.data;
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = `${assetData.header}.zip`;
+				link.download = `${item.header}.zip`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
-				setAssetDownloadCount((prev) => prev + 1);
 			} else {
 				notify('Failed to download asset pack', 'danger');
 			}

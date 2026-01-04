@@ -196,6 +196,7 @@ function AssetGrid({
 		try {
 			const response = await get(`/blueprint/${item.uuid}/blueprint.bp`, {
 				baseURL: 'https://cdn.axiomassets.net',
+				responseType: 'blob',
 			});
 			if (response.ok) {
 				await get(`/download/${item.uuid}/none`);
@@ -232,6 +233,7 @@ function AssetGrid({
 		try {
 			const res = await get(`/preset/${item.uuid}/preset.nbt`, {
 				baseURL: 'https://cdn.axiomassets.net',
+				responseType: 'blob',
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
@@ -255,6 +257,7 @@ function AssetGrid({
 		try {
 			const res = await get(`/asset-pack/${item.uuid}/pack.zip`, {
 				baseURL: 'https://cdn.axiomassets.net',
+				responseType: 'blob',
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);

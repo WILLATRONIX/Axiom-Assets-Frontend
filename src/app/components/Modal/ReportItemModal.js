@@ -1,5 +1,5 @@
 import { useState, Fragment } from 'react';
-import { post } from 'api/network';
+import { post } from 'lib/network';
 
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';

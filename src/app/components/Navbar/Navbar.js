@@ -3,9 +3,9 @@
 import { useState, useEffect, Fragment } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { post } from 'api/network';
-import { useAuth } from 'api/auth/authContext.js';
-import { hasPermission } from 'api/permissionContext';
+import { post } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext.js';
+import { hasPermission } from 'lib/permissionContext';
 
 const SettingsModal = dynamic(() => import('components/Modal/Settings'));
 const LoginModal = dynamic(() => import('components/Modal/Login'));
@@ -44,10 +44,12 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 	const [userLoggedIn, setUserLoggedIn] = useState(initialUserData?.valid);
 	const [userData, setUserData] = useState(initialUserData);
 
-	const [maintainenceMessageOpen, setMaintainenceMessageOpen] = useState(process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true');
+	const [maintainenceMessageOpen, setMaintainenceMessageOpen] = useState(
+		process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'
+	);
 
 	const router = useRouter();
-	const { user, loading, logout, fetchUserDetails } = useAuth();
+	const { user, loading, fetchUserDetails } = useAuth();
 
 	const handleMoreFilterChange = (data) => {
 		onChange(data);
@@ -74,13 +76,21 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 		}
 	};
 
+	const handleSaveMaintainenceBypass = () => {
+		localStorage.setItem('bypassMaintanenceMessage', 'true');
+		setMaintainenceMessageOpen(false);
+	};
+
 	useEffect(() => {
-		verifyToken();
-	}, [user, loading]);
+		const state = localStorage.getItem('bypassMaintanenceMessage');
+		if (state === 'true') {
+			setMaintainenceMessageOpen(false);
+		}
+	}, []);
 
 	useEffect(() => {
 		verifyToken();
-	}, []);
+	}, [user, loading]);
 
 	useEffect(() => {
 		if (variant === 'browse') {
@@ -90,7 +100,13 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 
 	return (
 		<Fragment>
-			{maintainenceMessageOpen && <MaintainenceMessage open={maintainenceMessageOpen} setOpen={setMaintainenceMessageOpen}/>}
+			{maintainenceMessageOpen && (
+				<MaintainenceMessage
+					open={maintainenceMessageOpen}
+					setOpen={setMaintainenceMessageOpen}
+					onClose={handleSaveMaintainenceBypass}
+				/>
+			)}
 			<Sheet
 				sx={{
 					width: '100vw',
@@ -129,7 +145,12 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 									position: 'relative',
 								}}
 							>
-								<img src={'/48.webp'} loading="lazy" alt="" width={32} height={32} />
+								<img
+									src={'https://cdn.axiomassets.net/defaults/icons/32.webp'}
+									loading="lazy"
+									width={32}
+									height={32}
+								/>
 								<Link
 									overlay
 									sx={{ fontWeight: 'bold', textWrap: 'nowrap', ml: '0.4rem' }}

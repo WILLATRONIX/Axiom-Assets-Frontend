@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
-import { post } from 'api/network';
-import { useNotification } from 'api/NotificationContext';
+import { post } from 'lib/network';
+import { useNotification } from 'lib/NotificationContext';
 
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';

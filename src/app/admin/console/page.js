@@ -2,9 +2,9 @@
 
 import { useEffect, useState, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
-import { get } from 'api/network';
-import { useAuth } from 'api/auth/authContext.js';
-import { hasPermission } from 'api/permissionContext';
+import { get } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext.js';
+import { hasPermission } from 'lib/permissionContext';
 
 import LoginModal from 'components/Modal/Login';
 import Navbar from 'components/Navbar/Navbar';

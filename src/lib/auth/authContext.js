@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { setUnauthorizedHandler } from 'api/network';
-import { get } from 'api/network';
+import { setUnauthorizedHandler } from 'lib/network';
+import { get } from 'lib/network';
 
 const AuthContext = createContext({
 	user: null,

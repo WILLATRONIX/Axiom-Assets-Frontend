@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Fragment, useRef } from 'react';
 
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 
 import Cropper from 'react-easy-crop';
 

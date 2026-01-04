@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns';
-import { post } from 'api/network';
+import { post } from 'lib/network';
 import { useRouter } from 'next/navigation';
 
 import PropTypes from 'prop-types';

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { createHighlighter } from 'shiki';
 
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 import SidebarMenu from 'components/Input/SidebarMenu';
 
 import Navbar from 'components/Navbar/Navbar';

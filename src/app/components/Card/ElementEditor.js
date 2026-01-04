@@ -1,7 +1,7 @@
 import { useState, Fragment, useEffect, useRef } from 'react';
 
-import { get, post } from 'api/network';
-import { useAuth } from 'api/auth/authContext.js';
+import { get, post } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext.js';
 
 import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';

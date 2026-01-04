@@ -2,12 +2,12 @@
 
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
 
-import { post } from 'api/network';
+import { post } from 'lib/network';
 
 import EditItemModal from 'components/Modal/EditItem';
 import UploadTheme from 'components/Modal/Upload/Theme';
 import CatImageUpload from 'components/Modal/Upload/CatImage';
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 import AssetGrid from 'components/Grid/AssetGrid';
 
 import Button from '@mui/joy/Button';

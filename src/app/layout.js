@@ -3,10 +3,10 @@ import { formatDistanceToNow } from 'date-fns';
 import InitColorSchemeScript from '@mui/joy/InitColorSchemeScript';
 import CssBaseline from '@mui/joy/CssBaseline';
 import { CssVarsProvider } from '@mui/joy/styles';
-import { AuthProvider } from 'api/auth/authContext';
+import { AuthProvider } from 'lib/auth/authContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { NotificationProvider } from 'api/NotificationContext';
-import { ContextMenuProvider } from 'api/MenuContext';
+import { NotificationProvider } from 'lib/NotificationContext';
+import { ContextMenuProvider } from 'lib/MenuContext';
 
 export async function generateMetadata() {
 	const dateCreated = formatDistanceToNow(new Date('2024-11-24T19:27:51.263Z'), { addSuffix: true });
@@ -27,7 +27,7 @@ export async function generateMetadata() {
 			authors: ['WILLATRONIX'],
 			images: [
 				{
-					url: `https://axiomassets.net/256.png`,
+					url: `https://cdn.axiomassets.net/defaults/icons/256.webp`,
 					width: 96,
 					height: 96,
 					alt: title,
@@ -38,7 +38,7 @@ export async function generateMetadata() {
 			card: 'summary',
 			title,
 			description,
-			images: [`https://axiomassets.net/256.png`],
+			images: [`https://cdn.axiomassets.net/defaults/icons/256.webp`],
 		},
 		alternates: {
 			canonical: `https://axiomassets.net/browse`,
@@ -51,7 +51,7 @@ export default function RootLayout({ children }) {
 		<html lang="en" suppressHydrationWarning={true}>
 			<head>
 				<meta property="og:type" content="website" />
-				<meta property="og:logo" content="https://axiomassets.net/256.png" />
+				<meta property="og:logo" content="https://cdn.axiomassets.net/defaults/icons/256.webp" />
 				<meta property="og:site_name" content="Axiom Asset Library" />
 				<meta property="og:locale" content="en_US" />
 				<meta name="darkreader-lock" />
@@ -65,6 +65,7 @@ export default function RootLayout({ children }) {
 				<meta charSet="UTF-8" />
 				<meta httpEquiv="content-language" content="en" />
 				<link rel="canonical" href="https://axiomassets.net/browse" />
+				<link rel="icon" type="image/webp" href="https://cdn.axiomassets.net/defaults/icons/16.webp"/>
 				<InitColorSchemeScript defaultMode="dark" />
 			</head>
 			<body>

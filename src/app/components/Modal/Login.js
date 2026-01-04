@@ -1,13 +1,13 @@
 import { useState, Fragment, useEffect } from 'react';
 
 import { useGoogleLogin } from '@react-oauth/google';
-import { post } from 'api/network';
-import { useAuth } from 'api/auth/authContext';
-import { msalInstance, initializeMsal } from 'api/msalConfig';
-import { hasPermission } from 'api/permissionContext';
+import { post } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext';
+import { msalInstance, initializeMsal } from 'lib/msalConfig';
+import { hasPermission } from 'lib/permissionContext';
 
 import CreateAccountCard from 'components/Card/CreateAccount';
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';

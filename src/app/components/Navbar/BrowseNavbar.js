@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 
-import { getFilter, setFilter, subscribeFilter } from 'api/searchFilter';
+import { getFilter, setFilter, subscribeFilter } from 'lib/searchFilter';
 
 import MoreFilterModal from 'components/Modal/MoreFilterModal';
 import DebouncedInput from 'components/Input/DebouncedInput';

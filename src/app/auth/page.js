@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from 'api/auth/authContext.js';
+import { useAuth } from 'lib/auth/authContext.js';
 
 import LoginModal from 'components/Modal/Login';
 import CreateAccountCard from 'components/Card/CreateAccount';

@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { post } from 'api/network';
-import { useAuth } from 'api/auth/authContext';
-import { useNotification } from 'api/NotificationContext';
+import { post } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext';
+import { useNotification } from 'lib/NotificationContext';
 
 import Box from '@mui/joy/Box';
 

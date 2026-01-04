@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
-import { post } from 'api/network';
-import { useNotification } from 'api/NotificationContext';
+import { post } from 'lib/network';
+import { useNotification } from 'lib/NotificationContext';
 
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
@@ -18,12 +18,13 @@ import Typography from '@mui/joy/Typography';
 
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
-export default function MaintainenceMessage({ open, setOpen }) {
+export default function MaintainenceMessage({ open, setOpen, onClose }) {
 	const [secretInputValue, setSecretInputValue] = useState('');
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		if (secretInputValue === 'itsmewillatronix') {
+			onClose();
 			setOpen(false);
 		}
 	};

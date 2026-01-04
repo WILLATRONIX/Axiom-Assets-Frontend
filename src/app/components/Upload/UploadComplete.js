@@ -1,8 +1,8 @@
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
 
-import { post } from 'api/network';
+import { post } from 'lib/network';
 import { useRouter } from 'next/navigation';
-import { useAuth } from 'api/auth/authContext';
+import { useAuth } from 'lib/auth/authContext';
 
 import LoginModal from 'components/Modal/Login';
 

@@ -83,9 +83,9 @@ function safeSerialize(value) {
 }
 
 export const get = (url, config = {}) => {
-	const { baseURL, ...rest } = config;
-	const params = {};
+	const { baseURL, responseType, ...rest } = config;
 
+	const params = {};
 	if (rest.params) {
 		for (const [key, val] of Object.entries(rest.params)) params[key] = val;
 	}
@@ -95,7 +95,7 @@ export const get = (url, config = {}) => {
 		params[key] = typeof value === 'object' ? JSON.stringify(safeSerialize(value)) : value;
 	}
 
-	return api.get(url, { ...rest, params, baseURL: baseURL || API_BASE_URL });
+	return api.get(url, { ...rest, params, baseURL: baseURL || API_BASE_URL, responseType });
 };
 
 export const post = (url, data, config = {}) =>

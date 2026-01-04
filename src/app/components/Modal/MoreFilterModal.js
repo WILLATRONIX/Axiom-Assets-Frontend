@@ -46,7 +46,9 @@ const fieldContext = {
 	},
 	header: { name: 'Title', type: 'str', canSort: true },
 	metric: { name: 'Size', type: 'int', canSort: true },
-	// publisher: { name: 'Publisher', type: 'str', canSort: false },
+	'publisher.username': { name: 'Username', type: 'str', canSort: false },
+	'publisher.display_name': { name: 'Display Name', type: 'str', canSort: false },
+	'publisher.is_creator': { name: 'Creator', type: 'bool', canSort: false },
 	downloads: { name: 'Downloads', type: 'int', canSort: true },
 	visibility: {
 		name: 'Visibility',

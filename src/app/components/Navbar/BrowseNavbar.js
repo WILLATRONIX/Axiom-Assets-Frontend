@@ -42,7 +42,7 @@ const editorTools = [
 	'Weld',
 ];
 
-const BrowseNavbar = ({ onChange, filterQuery }) => {
+const BrowseNavbar = ({}) => {
 	const [tagList, setTagList] = useState([]);
 	const [tagInputValue, setTagInputValue] = useState('');
 
@@ -114,7 +114,7 @@ const BrowseNavbar = ({ onChange, filterQuery }) => {
 		});
 		return () => unsubscribe();
 	}, []);
-	
+
 	return (
 		<Fragment>
 			<Box
@@ -208,7 +208,7 @@ const BrowseNavbar = ({ onChange, filterQuery }) => {
 					// 	</Select>
 					// }
 				/>
-				<Autocomplete
+				{/* <Autocomplete
 					multiple
 					variant="soft"
 					placeholder={filterQuery.type === '1' ? 'Filter Tools' : 'Filter Tags'}
@@ -286,7 +286,7 @@ const BrowseNavbar = ({ onChange, filterQuery }) => {
 							);
 						})
 					}
-				/>
+				/> */}
 			</Box>
 			<MoreFilterModal open={moreFilterModalOpen} setOpen={setMoreFilterModalOpen} />
 		</Fragment>

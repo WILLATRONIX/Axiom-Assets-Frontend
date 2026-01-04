@@ -37,7 +37,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LockIcon from '@mui/icons-material/Lock';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, defaultViewType }) => {
+const Navbar = ({ initialUserData, onChange = () => {}, variant, defaultViewType }) => {
 	const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 	const [loginModalOpen, setLoginModalOpen] = useState(false);
 
@@ -91,12 +91,6 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 	useEffect(() => {
 		verifyToken();
 	}, [user, loading]);
-
-	useEffect(() => {
-		if (variant === 'browse') {
-			onChange(filterQuery);
-		}
-	}, [filterQuery]);
 
 	return (
 		<Fragment>
@@ -170,17 +164,43 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 							</Box>
 							<Box sx={{ gap: 2, display: 'flex' }}>
 								<Button variant="plain" color="neutral" onClick={() => router.push('/help')}>
-									Help
+									Guide
 								</Button>
-								<Button
-									variant="plain"
-									color="neutral"
-									onClick={() => {
-										window.open(`https://discord.gg/JYMDCvmtfK`, '_blank', 'noopener,noreferrer');
-									}}
-								>
-									Discord
-								</Button>
+								<Dropdown>
+									<MenuButton variant="plain" startDecorator={<ExpandMoreIcon />}>
+										Support
+									</MenuButton>
+									<Menu placement="bottom" variant="soft">
+										<MenuItem>
+											<ListItemDecorator>
+												<OpenInNewIcon />
+											</ListItemDecorator>
+											<Link
+												href="https://discord.gg/JYMDCvmtfK"
+												target="_blank"
+												rel="noopener noreferrer"
+												overlay
+												color="#FFF"
+											>
+												Discord
+											</Link>
+										</MenuItem>
+										<MenuItem>
+											<ListItemDecorator>
+												<OpenInNewIcon />
+											</ListItemDecorator>
+											<Link
+												href="https://github.com/WILLATRONIX/Axiom-Assets-Frontend"
+												target="_blank"
+												rel="noopener noreferrer"
+												overlay
+												color="#FFF"
+											>
+												GitHub
+											</Link>
+										</MenuItem>
+									</Menu>
+								</Dropdown>
 							</Box>
 							<Box sx={{ width: 280, display: 'flex', gap: 2, justifyContent: 'end' }}>
 								{hasPermission(userData?.permissions, 'moderation') ? (
@@ -195,7 +215,9 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 									</Button>
 								) : (
 									<Dropdown>
-										<MenuButton variant="plain">Donate</MenuButton>
+										<MenuButton variant="plain" startDecorator={<ExpandMoreIcon />}>
+											Donate
+										</MenuButton>
 										<Menu placement="bottom" variant="soft">
 											<MenuItem>
 												<ListItemDecorator>
@@ -311,9 +333,7 @@ const Navbar = ({ initialUserData, onChange = () => {}, filterQuery, variant, de
 								)}
 							</Box>
 						</Box>
-						{variant === 'browse' && (
-							<BrowseNavbar onChange={handleMoreFilterChange} filterQuery={filterQuery} />
-						)}
+						{variant === 'browse' && <BrowseNavbar onChange={handleMoreFilterChange} />}
 					</Box>
 				</Box>
 			</Sheet>

@@ -127,10 +127,10 @@ export default function NotFoundPage() {
 							{description}
 						</Typography>
 					</Card>
-					<Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between' }}>
-						<Button variant="soft" color="neutral">
+					<Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'end' }}>
+						{/* <Button variant="soft" color="neutral">
 							Report Mistake
-						</Button>
+						</Button> */}
 						<Button variant="solid" onClick={handleRedirect}>
 							Continue
 						</Button>

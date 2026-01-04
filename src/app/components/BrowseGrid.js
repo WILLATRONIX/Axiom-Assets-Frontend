@@ -13,33 +13,9 @@ import AssetGrid from 'components/Grid/AssetGrid';
 
 import Box from '@mui/joy/Box';
 
-function BrowseGrid({ initialUserData, initialAssetData, initialFilters }) {
+function BrowseGrid({ initialUserData, initialAssetData }) {
 	const theme = useTheme();
 	const desktopView = useMediaQuery(theme.breakpoints.up('md'));
-
-	const [filterQuery, setFilterQuery] = useState({
-		header: initialFilters.asset,
-		publisherData: { username: initialFilters.publisher },
-		order: [[initialFilters.sort, initialFilters.order]],
-		type: initialFilters.type,
-		tags: initialFilters.tags,
-		tools: initialFilters.tools,
-	});
-
-	const handleFilterChange = (data) => {
-		const newFilter = {
-			header: data.header,
-			publisherData: { username: data?.publisherData?.username || '' },
-			order: [[data.sortBy || filterQuery.order[0][0], data.sortOrder || filterQuery.order[0][1]]],
-			type: 'all',
-			tags: data.tags,
-			tools: data.tools,
-		};
-
-		if (JSON.stringify(newFilter) !== JSON.stringify(filterQuery)) {
-			setFilterQuery(newFilter);
-		}
-	};
 
 	return (
 		<CssVarsProvider>
@@ -55,8 +31,6 @@ function BrowseGrid({ initialUserData, initialAssetData, initialFilters }) {
 				>
 					<Navbar
 						desktopView={desktopView}
-						onChange={handleFilterChange}
-						filterQuery={filterQuery}
 						variant="browse"
 						initialUserData={initialUserData}
 					/>
@@ -74,8 +48,6 @@ function BrowseGrid({ initialUserData, initialAssetData, initialFilters }) {
 				>
 					<AssetGrid
 						itemWidth={200}
-						filterQuery={filterQuery}
-						handleFilterChange={handleFilterChange}
 						highlightSearchMatch
 						initialAssetData={initialAssetData}
 					/>

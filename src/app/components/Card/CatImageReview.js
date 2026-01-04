@@ -93,15 +93,6 @@ const CatImageReview = ({ defaultValue, clearDefault }) => {
 	const [index, setIndex] = useState(0);
 	const [totalItemCount, setTotalItemCount] = useState(0);
 
-	const [filterQuery, setFilterQuery] = useState({
-		header: '',
-		publisherData: { username: '' },
-		order: [['date_created', 'DESC']],
-		type: '4',
-		tags: [],
-		tools: [],
-	});
-
 	const fetchItemsLimit = 4;
 
 	const { user, loading } = useAuth();
@@ -125,13 +116,13 @@ const CatImageReview = ({ defaultValue, clearDefault }) => {
 		setIsLoading(true);
 
 		try {
-			const res = await post('/browse/get-new-item', {
-				filterQuery,
-				pagination: {
-					limit: customFetchItemsLimit,
-					offset: index,
-				},
-			});
+			// const res = await post('/browse/get-new-item', {
+			// 	filterQuery,
+			// 	pagination: {
+			// 		limit: customFetchItemsLimit,
+			// 		offset: index,
+			// 	},
+			// });
 
 			if (!res.assetData || res.assetData.length === 0) {
 				setHasNoItems(true);

@@ -44,7 +44,7 @@ const LoginModal = ({ open, setOpen, onClose, backgroundBlur = true }) => {
 			setUserPermLvl(user.permission_level);
 			setUserImageID(user.image_id);
 
-			if (user.username === user.uuid && !hasPermission(user.permissions, 'user.*')) {
+			if (user.username === user.uuid) {
 				setCreateAccount(true);
 			}
 		} else if (!user && !loading) {

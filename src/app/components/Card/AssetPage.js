@@ -3,8 +3,9 @@
 import { useState, useEffect, Fragment } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import NextLink from 'next/link';
+import { notFound } from 'next/navigation';
 
-import { post, get } from 'lib/network';
+import { get } from 'lib/network';
 import { useAuth } from 'lib/auth/authContext.js';
 
 import AssetGrid from 'components/Grid/AssetGrid';
@@ -55,14 +56,6 @@ function App({ item }) {
 	const { user, loadingUser } = useAuth();
 
 	const metricMap = ['Blocks', 'Settings Changed', 'Colours Changed', 'Assets'];
-	const filterQuery = {
-		header: '',
-		publisherData: { username: item.publisherData.username },
-		order: [['date_created', 'DESC']],
-		type: 'all',
-		tags: [],
-		tools: [],
-	};
 
 	const { notify } = useNotification();
 
@@ -226,6 +219,10 @@ function App({ item }) {
 		}
 	};
 
+	if (!item) {
+		notFound();
+	}
+
 	const downloadDisplayOptions = {
 		0: (
 			<Dropdown>
@@ -331,7 +328,7 @@ function App({ item }) {
 							)}
 						</Box>
 					)}
-					<Typography level='body-xs'>I will update this page soon, its pretty ugly</Typography>
+					<Typography level="body-xs">I will update this page soon, its pretty ugly</Typography>
 					<Divider />
 					<Box
 						sx={{
@@ -456,10 +453,16 @@ function App({ item }) {
 								<Typography level="h4">Assets in this pack:</Typography>
 								<AssetGrid
 									itemWidth={153}
-									readyToLoad={assetData !== null}
-									defaultItems={[assetData]}
-									filterQuery={{ ...filterQuery, visibility: 'childItem', parent: item.uuid }}
-									totalItemLimit={12}
+									filterOverride={{
+										filter: {
+											field: 'visibility',
+											op: 'eq',
+											value: 'childItem',
+											and: [{ field: 'parent', op: 'eq', value: item.uuid }],
+										},
+										sort: [{ field: 'date_created', direction: 'desc' }],
+										savedOnly: false,
+									}}
 								/>
 								<Divider sx={{ my: 4 }} />
 							</>
@@ -467,10 +470,23 @@ function App({ item }) {
 						<Typography level="h4">{`More from ${assetData.publisherData.username}:`}</Typography>
 						<AssetGrid
 							itemWidth={153}
-							readyToLoad={assetData !== null}
-							defaultItems={[assetData]}
-							filterQuery={{ ...filterQuery, visibility: 'public' }}
 							totalItemLimit={12}
+							filterOverride={{
+								filter: {
+									and: [
+										{ field: 'visibility', op: 'eq', value: 'public' },
+										{ field: 'publisher.username', op: 'eq', value: item.publisherData.username },
+										{
+											or: [
+												{ field: 'date_created', op: 'lt', value: item.date_created },
+												{ field: 'date_created', op: 'gt', value: item.date_created },
+											],
+										},
+									],
+								},
+								sort: [{ field: 'date_created', direction: 'desc' }],
+								savedOnly: false,
+							}}
 						/>
 					</Box>
 				</Box>

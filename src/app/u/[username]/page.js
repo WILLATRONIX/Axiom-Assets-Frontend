@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
 
-import { post } from 'api/network';
+import { post } from 'lib/network';
 
 import UserProfile from 'components/Card/UserProfile';
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { post } from 'api/network';
-import { useNotification } from 'api/NotificationContext';
+import { post } from 'lib/network';
+import { useNotification } from 'lib/NotificationContext';
 
 import Box from '@mui/joy/Box';
 import Input from '@mui/joy/Input';

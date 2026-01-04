@@ -5,9 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import NextLink from 'next/link';
 import Portal from '@mui/material/Portal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { get } from 'api/network';
+import { get } from 'lib/network';
 
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 
 import ThumbPreview from 'components/Card/ItemCard/ThumbPreview';
 import SearchMatchText from 'components/Typography/SearchMatchText';

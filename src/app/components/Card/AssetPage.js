@@ -4,11 +4,11 @@ import { useState, useEffect, Fragment } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import NextLink from 'next/link';
 
-import { post, get } from 'api/network';
-import { useAuth } from 'api/auth/authContext.js';
+import { post, get } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext.js';
 
 import AssetGrid from 'components/Grid/AssetGrid';
-import { useNotification } from 'api/NotificationContext';
+import { useNotification } from 'lib/NotificationContext';
 
 import Box from '@mui/joy/Box';
 import Divider from '@mui/joy/Divider';

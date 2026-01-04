@@ -2,8 +2,8 @@ import { useRef, useState, Fragment } from 'react';
 
 import Cropper from 'react-easy-crop';
 
-import { useNotification } from 'api/NotificationContext';
-import { post } from 'api/network';
+import { useNotification } from 'lib/NotificationContext';
+import { post } from 'lib/network';
 
 import Button from '@mui/joy/Button';
 import IconButton from '@mui/joy/IconButton';

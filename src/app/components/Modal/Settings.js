@@ -1,8 +1,8 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
-import { post } from 'api/network';
-import { useAuth } from 'api/auth/authContext.js';
-import { useNotification } from 'api/NotificationContext';
+import { post } from 'lib/network';
+import { useAuth } from 'lib/auth/authContext.js';
+import { useNotification } from 'lib/NotificationContext';
 
 import Button from '@mui/joy/Button';
 import Modal from '@mui/joy/Modal';

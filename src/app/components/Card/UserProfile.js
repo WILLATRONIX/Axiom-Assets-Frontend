@@ -3,11 +3,11 @@
 import { useState, useEffect, Fragment } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useAuth } from 'api/auth/authContext.js';
+import { useAuth } from 'lib/auth/authContext.js';
 import { notFound } from 'next/navigation';
 
 import AssetGrid from 'components/Grid/AssetGrid';
-import { post } from 'api/network';
+import { post } from 'lib/network';
 
 import Box from '@mui/joy/Box';
 import Divider from '@mui/joy/Divider';

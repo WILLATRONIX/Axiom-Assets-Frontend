@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, Fragment } from 'react';
-import { get } from 'api/network';
+import { get } from 'lib/network';
 
 import ConsoleChart from 'components/Charts/ConsoleChart';
 

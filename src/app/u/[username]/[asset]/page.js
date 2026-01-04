@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import { notFound } from 'next/navigation';
-import { get } from 'api/network';
+import { get } from 'lib/network';
 import AssetPage from 'components/Card/AssetPage';
 import Box from '@mui/joy/Box';
 import Navbar from 'components/Navbar/Navbar';

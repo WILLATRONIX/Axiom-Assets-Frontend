@@ -1,6 +1,6 @@
 import { useState, Fragment, useMemo, useEffect } from 'react';
 
-import { getFilter, setFilter, subscribeFilter } from 'api/searchFilter';
+import { getFilter, setFilter, subscribeFilter } from 'lib/searchFilter';
 
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';

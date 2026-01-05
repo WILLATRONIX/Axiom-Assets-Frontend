@@ -41,7 +41,7 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 const pageViews = [
 	{
 		name: 'Important',
-		children: [{ name: 'Rules' }, { name: 'Privacy Policy' }, { name: 'Terms of Service' }],
+		children: [{ name: 'Rules' }, { name: 'Privacy Policy' }, { name: 'Terms Of Service' }],
 	},
 	{
 		name: 'Assets',
@@ -49,7 +49,7 @@ const pageViews = [
 	},
 	{
 		name: 'Account',
-		children: [{ name: 'Signing up' }, { name: 'Managing your account' }, { name: 'Becoming a Creator' }],
+		children: [{ name: 'Signing Up' }, { name: 'Managing Your Account' }, { name: 'Becoming A Creator' }],
 	},
 ];
 
@@ -61,7 +61,7 @@ const formatChapterHash = (input) => {
 };
 
 export default function Page({}) {
-	const [selectedPage, setSelectedPage] = useState('Rules');
+	const [selectedPage, setSelectedPage] = useState('');
 	const [pageContent, setPageContent] = useState('');
 
 	const getPagePath = (pageName, nodes = pageViews, parentPath = '') => {
@@ -107,6 +107,9 @@ export default function Page({}) {
 		let cancelled = false;
 
 		const pagePath = getPagePath(selectedPage);
+
+		console.log(selectedPage);
+		console.log(pagePath);
 
 		fetch(
 			`https://raw.githubusercontent.com/WILLATRONIX/Axiom-Assets-Markdown/refs/heads/main/help-pages/${pagePath}.md`

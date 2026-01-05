@@ -23,7 +23,7 @@ import MenuItem from '@mui/joy/MenuItem';
 import Tooltip from '@mui/joy/Tooltip';
 import FormControl from '@mui/joy/FormControl';
 import FormHelperText from '@mui/joy/FormHelperText';
-import FormLabel from '@mui/joy/FormLabel';
+import ButtonGroup from '@mui/joy/ButtonGroup';
 import Checkbox from '@mui/joy/Checkbox';
 
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
@@ -48,7 +48,7 @@ const fieldContext = {
 	metric: { name: 'Size', type: 'int', canSort: true },
 	'publisher.username': { name: 'Username', type: 'str', canSort: false },
 	'publisher.display_name': { name: 'Display Name', type: 'str', canSort: false },
-	'publisher.is_creator': { name: 'Creator', type: 'bool', canSort: false },
+	'publisher.is_creator': { name: 'Is Creator', type: 'bool', canSort: false },
 	downloads: { name: 'Downloads', type: 'int', canSort: true },
 	visibility: {
 		name: 'Visibility',
@@ -68,6 +68,7 @@ const operatorsByType = {
 	int: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'],
 	date: ['gt', 'gte', 'lt', 'lte'],
 	select: ['eq'],
+	bool: ['eq', 'neq'],
 };
 
 const operatorLabels = {
@@ -96,6 +97,8 @@ function getDefaultValueForField(field) {
 			return '';
 		case 'date':
 			return '';
+		case 'bool':
+			return true;
 		default:
 			return '';
 	}
@@ -119,6 +122,8 @@ function isValidValue(field, value) {
 		case 'str':
 		case 'date':
 			return typeof value === 'string' && value.trim() !== '';
+		case 'bool':
+			return typeof value === 'boolean';
 		default:
 			return false;
 	}
@@ -242,6 +247,28 @@ function ValueInput({ field, value, onChange }) {
 				/>
 			);
 		}
+
+		case 'bool':
+			return (
+				<ButtonGroup sx={{ borderRadius: 0, boxShadow: 'none', flex: 1, '& > *': { flex: 1 } }}>
+					<Button
+						variant={value ? 'solid' : 'soft'}
+						onClick={() => {
+							onChange(true);
+						}}
+					>
+						True
+					</Button>
+					<Button
+						variant={!value ? 'solid' : 'soft'}
+						onClick={() => {
+							onChange(false);
+						}}
+					>
+						False
+					</Button>
+				</ButtonGroup>
+			);
 
 		case 'str':
 		default:
@@ -531,6 +558,9 @@ export default function MoreFilterModal({ open, setOpen }) {
 			savedOnly: savedOnly,
 		};
 
+		console.log(rootGroup);
+		console.log(result);
+
 		setFilter(result);
 		setOpen(false);
 	};
@@ -539,9 +569,9 @@ export default function MoreFilterModal({ open, setOpen }) {
 		const unsubscribe = subscribeFilter((newFilter) => {
 			const newRootGroup = parseFilterToRootGroup(newFilter.filter);
 			setRootGroup(newRootGroup);
-			
+
 			const newSorts = parseGlobalSorts(newFilter);
-			setSorts(newSorts)
+			setSorts(newSorts);
 		});
 		return () => unsubscribe();
 	}, []);

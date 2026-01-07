@@ -2,10 +2,15 @@ let currentFilter = null;
 const listeners = new Set();
 
 export const defaultFilter = () => ({
+	baseFilter: {
+		sortBy: 'date_created',
+		sortOrder: 'desc',
+		itemType: 0,
+		searchQuery: '',
+		searchQueryField: 'header',
+	},
 	filter: {
-		field: 'visibility',
-		op: 'eq',
-		value: 'public',
+		and: [{ field: 'visibility', op: 'eq', value: 'public' }],
 	},
 	sort: [{ field: 'date_created', direction: 'desc' }],
 	savedOnly: false,

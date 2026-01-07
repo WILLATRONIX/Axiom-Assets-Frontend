@@ -554,10 +554,8 @@ export default function MoreFilterModal({ open, setOpen }) {
 			filter,
 			sort: finalSorts.length ? finalSorts : [{ field: 'date_created', direction: 'asc' }],
 			savedOnly: savedOnly,
+			userCreated: true,
 		};
-
-		console.log(rootGroup);
-		console.log(result);
 
 		setFilter(result);
 		setOpen(false);

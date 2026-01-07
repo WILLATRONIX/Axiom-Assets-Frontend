@@ -43,6 +43,7 @@ const ItemCard = ({
 	dropdownOptions = [],
 	disableExpandItem,
 	handleDownload,
+	baseFilter = {},
 }) => {
 	const itemRef = useRef(null);
 	const parentRef = useRef(null);
@@ -796,7 +797,14 @@ const ItemCard = ({
 									},
 								}}
 							>
-								<SearchMatchText highlight={highlightSearchMatch ? '' : ''} text={item.header} />
+								<SearchMatchText
+									highlight={
+										highlightSearchMatch && baseFilter.searchQueryField === 'header'
+											? baseFilter.searchQuery
+											: ''
+									}
+									text={item.header}
+								/>
 							</Typography>
 						</PrefetchLink>
 
@@ -828,7 +836,11 @@ const ItemCard = ({
 							>
 								{item.publisherData.is_creator && <VerifiedIcon />}
 								<SearchMatchText
-									highlight={highlightSearchMatch ? '' : ''}
+									highlight={
+										highlightSearchMatch && baseFilter.searchQueryField === 'publisher.display_name'
+											? baseFilter.searchQuery
+											: ''
+									}
 									text={item.publisherData.display_name}
 								/>
 							</Typography>

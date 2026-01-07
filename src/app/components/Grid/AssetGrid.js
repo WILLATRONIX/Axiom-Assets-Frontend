@@ -483,13 +483,10 @@ function AssetGrid({
 								itemDiameter={adjustedWidth}
 								highlightSearchMatch={highlightSearchMatch}
 								userData={{ ...userData, canManageAsset: editPerms, userLoggedIn }}
-								handleDeleteClick={handleDeleteClick}
-								handleEditClick={handleEditClick}
-								handleReportClick={handleReportClick}
-								handleShareClick={handleShareClick}
 								disableExpandItem={disableExpandItem}
 								dropdownOptions={optionsOverride || defaultItemDropdownOptions}
 								handleDownload={handleAssetDownload}
+								baseFilter={searchFilter.baseFilter}
 							/>
 						</Box>
 					);

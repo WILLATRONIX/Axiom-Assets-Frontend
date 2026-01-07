@@ -237,7 +237,7 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = response.data;
+				const blob = res.data;
 
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
@@ -261,7 +261,7 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = response.data;
+				const blob = res.data;
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.zip`;

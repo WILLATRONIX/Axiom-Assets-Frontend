@@ -3,9 +3,11 @@
 import { useState, useEffect, Fragment } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+
 import { post } from 'lib/network';
 import { useAuth } from 'lib/auth/authContext.js';
 import { hasPermission } from 'lib/permissionContext';
+import { resetFilter } from 'lib/searchFilter';
 
 const SettingsModal = dynamic(() => import('components/Modal/Settings'));
 const LoginModal = dynamic(() => import('components/Modal/Login'));
@@ -154,6 +156,7 @@ const Navbar = ({ initialUserData, onChange = () => {}, variant, defaultViewType
 									tabIndex={0}
 									onClick={() => {
 										router.push('/browse');
+										resetFilter()
 									}}
 								>
 									Axiom Asset Library

@@ -64,7 +64,7 @@ const BrowseNavbar = ({}) => {
 		setSearchType(newValue);
 		const current = getFilter();
 
-		const baseFilter =
+		const defaultFilter =
 			searchField && searchInputValue?.trim()
 				? {
 						and: [
@@ -79,14 +79,20 @@ const BrowseNavbar = ({}) => {
 		if (newValue === 'all') {
 			newFilter = {
 				...current,
-				filter: baseFilter,
+				filter: defaultFilter,
 			};
 		} else {
 			newFilter = {
 				...current,
 				filter: {
-					...baseFilter,
-					and: [...baseFilter.and, { field: 'type', op: 'eq', value: newValue }],
+					...defaultFilter,
+					and: [...defaultFilter.and, { field: 'type', op: 'eq', value: newValue }],
+				},
+				baseFilter: {
+					...current.baseFilter,
+					type: newValue,
+					searchQuery: searchInputValue.trim(),
+					searchQueryField: searchField,
 				},
 			};
 		}
@@ -116,6 +122,11 @@ const BrowseNavbar = ({}) => {
 								{ field: 'visibility', op: 'eq', value: 'public' },
 							],
 					  },
+			baseFilter: {
+				...current.baseFilter,
+				searchQuery: trimmedValue,
+				searchQueryField: field,
+			},
 		};
 
 		setFilter(newFilter);
@@ -140,6 +151,11 @@ const BrowseNavbar = ({}) => {
 		setFilter({
 			...current,
 			sort: [{ field: sortBy, direction: newDirection }],
+			baseFilter: {
+				...current.baseFilter,
+				sortBy,
+				sortOrder: newDirection,
+			},
 		});
 	};
 

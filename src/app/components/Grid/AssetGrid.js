@@ -89,8 +89,8 @@ function AssetGrid({
 
 	useEffect(() => {
 		const unsubscribe = subscribeFilter((newFilter) => {
-			clearItems();
 			setSearchFilter(newFilter);
+			clearItems();
 		});
 		return () => unsubscribe();
 	}, []);

@@ -26,7 +26,6 @@ import FormHelperText from '@mui/joy/FormHelperText';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 import Checkbox from '@mui/joy/Checkbox';
 
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -75,10 +74,9 @@ const operatorLabels = {
 	eq: '=',
 	neq: '!=',
 	gt: '>',
-	gte: '≥',
+	gte: '>=',
 	lt: '<',
-	lte: '≤',
-	in: 'IN',
+	lte: '<=',
 	like: '~',
 };
 

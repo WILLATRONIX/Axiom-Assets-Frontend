@@ -46,7 +46,8 @@ const BrowseNavbar = ({}) => {
 	const [tagList, setTagList] = useState([]);
 	const [tagInputValue, setTagInputValue] = useState('');
 
-	const [searchType, setSearchType] = useState('header');
+	const [searchField, setSearchField] = useState('header');
+	const [searchType, setSearchType] = useState('all');
 	const [searchInputValue, setSearchInputValue] = useState('');
 
 	const [sortIconRotation, setSortIconRotation] = useState(0);
@@ -59,23 +60,59 @@ const BrowseNavbar = ({}) => {
 	const [moreFilterModalOpen, setMoreFilterModalOpen] = useState(false);
 	const [searchFilter, setSearchFilter] = useState(getFilter());
 
-	const handleSearchTypeChange = (event, newValue) => {
+	const handleSortTypeChange = (event, newValue) => {
 		setSearchType(newValue);
-		handleDebouncedSearch(searchInputValue);
+		const current = getFilter();
+
+		const baseFilter =
+			searchField && searchInputValue?.trim()
+				? {
+						and: [
+							{ field: searchField, op: 'like', value: searchInputValue.trim() },
+							{ field: 'visibility', op: 'eq', value: 'public' },
+						],
+				  }
+				: { and: [{ field: 'visibility', op: 'eq', value: 'public' }] };
+
+		let newFilter;
+
+		if (newValue === 'all') {
+			newFilter = {
+				...current,
+				filter: baseFilter,
+			};
+		} else {
+			newFilter = {
+				...current,
+				filter: {
+					...baseFilter,
+					and: [...baseFilter.and, { field: 'type', op: 'eq', value: newValue }],
+				},
+			};
+		}
+
+		setFilter(newFilter);
 	};
 
-	const handleDebouncedSearch = (event) => {
-		const newValue = event.target.value.trim();
+	const handleSearchTypeChange = (event, newValue) => {
+		setSearchField(newValue);
+		if (searchInputValue.trim() !== '') {
+			handleDebouncedSearch(searchInputValue, newValue);
+		}
+	};
+
+	const handleDebouncedSearch = (newValue = '', field = searchField) => {
+		const trimmedValue = newValue.trim();
 		const current = getFilter();
 
 		const newFilter = {
 			...current,
 			filter:
-				newValue === ''
+				trimmedValue === ''
 					? { and: [{ field: 'visibility', op: 'eq', value: 'public' }] }
 					: {
 							and: [
-								{ field: searchType, op: 'like', value: newValue },
+								{ field: field, op: 'like', value: trimmedValue },
 								{ field: 'visibility', op: 'eq', value: 'public' },
 							],
 					  },
@@ -111,6 +148,7 @@ const BrowseNavbar = ({}) => {
 			setSearchFilter(newFilter);
 			setSortBy(newFilter.sort[0]?.field || 'date_created');
 			setSortOrder(newFilter.sort[0]?.direction || 'desc');
+			setSortIconRotation(newFilter.sort[0]?.direction === 'desc' ? 0 : 180);
 		});
 		return () => unsubscribe();
 	}, []);
@@ -125,20 +163,25 @@ const BrowseNavbar = ({}) => {
 					py: '3px',
 				}}
 			>
-				<Button
-					color="neutral"
-					variant="soft"
-					startDecorator={<TuneIcon />}
+				<Select
 					sx={{
-						flexShrink: 0,
-						backgroundColor: 'color-mix(in srgb, var(--joy-palette-neutral-softBg) 100%, transparent 30%)',
-						boxShadow:
-							'var(--joy-shadowRing, 0 0 #000),0px 1px 2px 0px rgba(var(--joy-shadowChannel, 21 21 21) / var(--joy-shadowOpacity, 0.08))',
+						// width: 'auto',
+						// boxShadow: 'unset',
+						// borderRadius: '0 var(--joy-radius-sm) var(--joy-radius-sm) 0',
+						width: 'fit-content',
+						// backgroundColor: 'color-mix(in srgb, var(--joy-palette-neutral-softBg) 100%, transparent 30%)',
 					}}
-					onClick={() => setMoreFilterModalOpen(true)}
+					variant="soft"
+					defaultValue={'all'}
+					value={searchType}
+					onChange={handleSortTypeChange}
 				>
-					Advanced
-				</Button>
+					<Option value={'all'}>All</Option>
+					<Option value={0}>Blueprint</Option>
+					<Option value={1}>Preset</Option>
+					<Option value={2}>Theme</Option>
+					<Option value={3}>Asset Pack</Option>
+				</Select>
 				<Box
 					sx={{
 						display: 'flex',
@@ -181,112 +224,46 @@ const BrowseNavbar = ({}) => {
 					</Select>
 				</Box>
 				<DebouncedInput
-					placeholder="Search"
+					placeholder={searchField === 'header' ? 'Search asset...' : 'Search by user...'}
 					sx={{
-						width: '100%',
-						// pl: 0,
+						flex: 1,
+						pl: 0,
 						backgroundColor: 'color-mix(in srgb, var(--joy-palette-neutral-softBg) 100%, transparent 30%)',
 					}}
 					variant="soft"
 					debounceTimeout={200}
 					value={searchInputValue}
 					onChange={(event) => setSearchInputValue(event.target.value)}
-					onDebounce={handleDebouncedSearch}
-					// startDecorator={
-					// 	<Select
-					// 		variant="soft"
-					// 		defaultValue={0}
-					// 		sx={{
-					// 			boxShadow: 'unset',
-					// 			backgroundColor: 'transparent',
-					// 		}}
-					// 		onChange={handleSearchTypeChange}
-					// 	>
-					// 		<Option value={0}>Asset</Option>
-					// 		<Option value={1}>Publisher</Option>
-					// 		<Option value={2}>Tag</Option>
-					// 	</Select>
-					// }
+					onDebounce={(event) => handleDebouncedSearch(event.target.value)}
+					startDecorator={
+						<Select
+							variant="soft"
+							value={searchField}
+							sx={{
+								boxShadow: 'unset',
+								backgroundColor: 'transparent',
+							}}
+							onChange={handleSearchTypeChange}
+						>
+							<Option value={'header'}>Asset</Option>
+							<Option value={'publisher.display_name'}>Publisher</Option>
+						</Select>
+					}
 				/>
-				{/* <Autocomplete
-					multiple
+				<Button
+					color="neutral"
 					variant="soft"
-					placeholder={filterQuery.type === '1' ? 'Filter Tools' : 'Filter Tags'}
+					startDecorator={<TuneIcon />}
 					sx={{
-						width: '50%',
-						display: filterQuery.type !== '0' && filterQuery.type !== '1' ? 'none' : undefined,
 						flexShrink: 0,
+						backgroundColor: 'color-mix(in srgb, var(--joy-palette-neutral-softBg) 100%, transparent 30%)',
+						boxShadow:
+							'var(--joy-shadowRing, 0 0 #000),0px 1px 2px 0px rgba(var(--joy-shadowChannel, 21 21 21) / var(--joy-shadowOpacity, 0.08))',
 					}}
-					limitTags={10}
-					freeSolo
-					filterSelectedOptions
-					options={filterQuery.type === '1' ? editorTools : tagList}
-					getOptionLabel={(option) => (typeof option === 'string' ? option : option.tag)}
-					value={
-						filterQuery.type === '1'
-							? selectedTools
-							: selectedTags.map((tag) => tagList.find((t) => t.tag === tag) || { tag, ref_count: 0 })
-					}
-					onInputChange={(e, newInput) => setTagInputValue(newInput)}
-					onChange={(e, newValue) => {
-						if (filterQuery.type === '1') {
-							handleToolChange(newValue);
-							setSelectedTools(newValue);
-						} else {
-							const tagNames = newValue.map((t) => (typeof t === 'string' ? t : t.tag));
-							handleTagChange(tagNames);
-							setSelectedTags(tagNames);
-						}
-					}}
-					renderOption={(props, tag) => {
-						const tagName = typeof tag === 'string' ? tag : tag.tag;
-						const refCount = typeof tag === 'string' ? 0 : tag.ref_count;
-
-						return (
-							<AutocompleteOption key={tagName} {...props}>
-								<ListItemContent
-									sx={{
-										fontSize: 'md',
-										display: 'flex',
-										flexDirection: 'row',
-										alignItems: 'center',
-										justifyContent: 'space-between',
-									}}
-								>
-									<Typography level="body-md">{tagName}</Typography>
-									<Typography
-										level="body-sm"
-										sx={{
-											display: filterQuery.type === '1' ? 'none' : undefined,
-										}}
-									>
-										{`${refCount} ${refCount === 1 ? 'Result' : 'Results'}`}
-									</Typography>
-								</ListItemContent>
-							</AutocompleteOption>
-						);
-					}}
-					renderTags={(tags, getTagProps) =>
-						tags.map((tag, index) => {
-							const { key, ...tagProps } = getTagProps({ index });
-							const tagName = typeof tag === 'string' ? tag : tag.tag;
-
-							return (
-								<Chip
-									key={tagName}
-									size="lg"
-									variant="solid"
-									color="primary"
-									endDecorator={<Close fontSize="sm" />}
-									sx={{ minWidth: 0 }}
-									{...tagProps}
-								>
-									{tagName}
-								</Chip>
-							);
-						})
-					}
-				/> */}
+					onClick={() => setMoreFilterModalOpen(true)}
+				>
+					Advanced
+				</Button>
 			</Box>
 			<MoreFilterModal open={moreFilterModalOpen} setOpen={setMoreFilterModalOpen} />
 		</Fragment>

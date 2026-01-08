@@ -88,11 +88,15 @@ function AssetGrid({
 	};
 
 	useEffect(() => {
-		const unsubscribe = subscribeFilter((newFilter) => {
-			clearItems();
+		const unsubscribe = subscribeFilter((newFilter, { initial } = {}) => {
 			setSearchFilter(newFilter);
+
+			if (!initial) {
+				clearItems();
+			}
 		});
-		return () => unsubscribe();
+
+		return unsubscribe;
 	}, []);
 
 	const getChangedValues = (original, edited) => {
@@ -237,7 +241,7 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = response.data;
+				const blob = res.data;
 
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
@@ -261,7 +265,7 @@ function AssetGrid({
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
-				const blob = response.data;
+				const blob = res.data;
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.zip`;
@@ -313,7 +317,7 @@ function AssetGrid({
 		setIsLoading(true);
 
 		const selectedFilter = filterOverride || searchFilter;
-		
+
 		const res = await get('/browse/get-assets', {
 			params: {
 				flags: JSON.stringify({
@@ -483,13 +487,10 @@ function AssetGrid({
 								itemDiameter={adjustedWidth}
 								highlightSearchMatch={highlightSearchMatch}
 								userData={{ ...userData, canManageAsset: editPerms, userLoggedIn }}
-								handleDeleteClick={handleDeleteClick}
-								handleEditClick={handleEditClick}
-								handleReportClick={handleReportClick}
-								handleShareClick={handleShareClick}
 								disableExpandItem={disableExpandItem}
 								dropdownOptions={optionsOverride || defaultItemDropdownOptions}
 								handleDownload={handleAssetDownload}
+								baseFilter={searchFilter.baseFilter}
 							/>
 						</Box>
 					);

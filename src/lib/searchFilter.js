@@ -2,10 +2,15 @@ let currentFilter = null;
 const listeners = new Set();
 
 export const defaultFilter = () => ({
+	baseFilter: {
+		sortBy: 'date_created',
+		sortOrder: 'desc',
+		itemType: 'all',
+		searchQuery: '',
+		searchQueryField: 'header',
+	},
 	filter: {
-		field: 'visibility',
-		op: 'eq',
-		value: 'public',
+		and: [{ field: 'visibility', op: 'eq', value: 'public' }],
 	},
 	sort: [{ field: 'date_created', direction: 'desc' }],
 	savedOnly: false,
@@ -15,17 +20,22 @@ currentFilter = defaultFilter();
 
 export const getFilter = () => currentFilter;
 
-export const setFilter = (newFilter) => {
+export const setFilter = (newFilter, { initial = false } = {}) => {
 	currentFilter = newFilter;
-	listeners.forEach((callback) => callback(currentFilter));
+
+	listeners.forEach((callback) => callback(newFilter, { initial }));
 };
 
 export const resetFilter = () => {
-	currentFilter = defaultFilter();
-	listeners.forEach((callback) => callback(currentFilter));
+	setFilter(defaultFilter(), { initial: true });
 };
 
-export const subscribeFilter = (callback) => {
+export const subscribeFilter = (callback, { emitCurrent = true } = {}) => {
 	listeners.add(callback);
+
+	if (emitCurrent && currentFilter) {
+		callback(currentFilter, { initial: true });
+	}
+
 	return () => listeners.delete(callback);
 };

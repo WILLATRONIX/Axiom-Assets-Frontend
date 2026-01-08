@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-import NextLink from 'next/link';
 import Portal from '@mui/material/Portal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { get } from 'lib/network';
+import PrefetchLink from 'components/Link';
 
 import { useNotification } from 'lib/NotificationContext';
 
@@ -28,12 +28,8 @@ import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import Tooltip from '@mui/joy/Tooltip';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CloseIcon from '@mui/icons-material/Close';
 import VerifiedIcon from '@mui/icons-material/Verified';
-import ShareIcon from '@mui/icons-material/ShareOutlined';
-import DeleteForever from '@mui/icons-material/DeleteForever';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ReportIcon from '@mui/icons-material/FlagOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -47,6 +43,7 @@ const ItemCard = ({
 	dropdownOptions = [],
 	disableExpandItem,
 	handleDownload,
+	baseFilter = {},
 }) => {
 	const itemRef = useRef(null);
 	const parentRef = useRef(null);
@@ -387,7 +384,7 @@ const ItemCard = ({
 														>
 															{item.header}
 														</Typography>
-														<NextLink
+														<PrefetchLink
 															href={`/u/${item.publisherData.username}`}
 															style={{
 																textDecoration: 'none',
@@ -418,7 +415,7 @@ const ItemCard = ({
 																{item.publisherData.is_creator && <VerifiedIcon />}
 																{item.publisherData.display_name}
 															</Typography>
-														</NextLink>
+														</PrefetchLink>
 														<Box
 															sx={{
 																mt: 'auto',
@@ -777,7 +774,7 @@ const ItemCard = ({
 							minWidth: 0,
 						}}
 					>
-						<NextLink
+						<PrefetchLink
 							href={`/u/${item.publisherData.username}/${item.uuid}`}
 							style={{
 								textDecoration: 'none',
@@ -800,11 +797,18 @@ const ItemCard = ({
 									},
 								}}
 							>
-								<SearchMatchText highlight={highlightSearchMatch ? '' : ''} text={item.header} />
+								<SearchMatchText
+									highlight={
+										highlightSearchMatch && baseFilter.searchQueryField === 'header'
+											? baseFilter.searchQuery
+											: ''
+									}
+									text={item.header}
+								/>
 							</Typography>
-						</NextLink>
+						</PrefetchLink>
 
-						<NextLink
+						<PrefetchLink
 							href={`/u/${item.publisherData.username}`}
 							style={{
 								textDecoration: 'none',
@@ -832,11 +836,15 @@ const ItemCard = ({
 							>
 								{item.publisherData.is_creator && <VerifiedIcon />}
 								<SearchMatchText
-									highlight={highlightSearchMatch ? '' : ''}
+									highlight={
+										highlightSearchMatch && baseFilter.searchQueryField === 'publisher.display_name'
+											? baseFilter.searchQuery
+											: ''
+									}
 									text={item.publisherData.display_name}
 								/>
 							</Typography>
-						</NextLink>
+						</PrefetchLink>
 					</Box>
 					<AnimatePresence>
 						{isHovered && (

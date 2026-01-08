@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { notFound } from 'next/navigation';
 
 import { useAuth } from 'lib/auth/authContext.js';
-import { getFilter, setFilter, subscribeFilter, resetFilter } from 'lib/searchFilter';
+import { getFilter, setFilter, subscribeFilter } from 'lib/searchFilter';
 import { post } from 'lib/network';
 
 import DebouncedInput from 'components/Input/DebouncedInput';

@@ -54,9 +54,6 @@ const BrowseNavbar = ({}) => {
 	const [sortBy, setSortBy] = useState('date_created');
 	const [sortOrder, setSortOrder] = useState('desc');
 
-	const [selectedTags, setSelectedTags] = useState([]);
-	const [selectedTools, setSelectedTools] = useState([]);
-
 	const [moreFilterModalOpen, setMoreFilterModalOpen] = useState(false);
 	const [searchFilter, setSearchFilter] = useState(getFilter());
 

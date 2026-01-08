@@ -5,7 +5,7 @@ export const defaultFilter = () => ({
 	baseFilter: {
 		sortBy: 'date_created',
 		sortOrder: 'desc',
-		itemType: 0,
+		itemType: 'all',
 		searchQuery: '',
 		searchQueryField: 'header',
 	},

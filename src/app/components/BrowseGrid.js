@@ -18,7 +18,7 @@ function BrowseGrid({ initialUserData, initialAssetData, initialFilter }) {
 			baseFilter: {
 				sortBy: 'date_created',
 				sortOrder: 'desc',
-				itemType: 0,
+				itemType: 'all',
 				searchQuery: '',
 				searchQueryField: 'header',
 			},

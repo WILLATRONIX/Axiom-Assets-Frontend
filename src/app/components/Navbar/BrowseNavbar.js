@@ -62,7 +62,7 @@ const BrowseNavbar = ({}) => {
 
 	const handleSortTypeChange = (event, newValue) => {
 		setSearchType(newValue);
-		
+
 		const current = getFilter();
 
 		const defaultFilter =
@@ -161,15 +161,17 @@ const BrowseNavbar = ({}) => {
 	};
 
 	useEffect(() => {
-		const applyFilter = (newFilter, { initial }) => {
+		const unsubscribe = subscribeFilter((newFilter, { initial } = {}) => {
 			setSearchFilter(newFilter);
 			setSortBy(newFilter.sort[0]?.field || 'date_created');
 			setSortOrder(newFilter.sort[0]?.direction || 'desc');
 			setSortIconRotation(newFilter.sort[0]?.direction === 'desc' ? 0 : 180);
-			setSearchType(newFilter.baseFilter.itemType ?? 'all');
-		};
 
-		const unsubscribe = subscribeFilter(applyFilter);
+			if (initial) {
+				setSortBy(newFilter.baseFilter.sortBy || 'date_created');
+				setSearchType(newFilter.baseFilter.itemType ?? 'all');
+			}
+		});
 
 		return unsubscribe;
 	}, []);

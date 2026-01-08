@@ -3,10 +3,11 @@ import BrowseGrid from 'components/BrowseGrid';
 import Box from '@mui/joy/Box';
 import { cookies } from 'next/headers';
 
-export default async function Page({ params, searchParams }) {
-	const slug = params.slug ?? [];
+export default async function Page(props) {
+	const { params, searchParams } = props;
+	const { sortBy: slug = [] } = await params;
+	const resolvedSearchParams = await searchParams;
 	const sortSlug = slug[0] ?? 'latest';
-	const searchParamValue = await searchParams
 
 	const sortByMap = {
 		latest: 'date_created',
@@ -18,11 +19,11 @@ export default async function Page({ params, searchParams }) {
 	const sortByField = sortByMap[sortSlug] ?? 'date_created';
 
 	const itemTypeMap = ['blueprint', 'preset', 'theme', 'asset-pack'];
-	const typeParam = searchParamValue?.type ?? null;
-	const itemType = itemTypeMap.includes(typeParam) ? itemTypeMap.indexOf(typeParam) : null;
+	const typeParam = resolvedSearchParams?.type ?? null;
+	const itemType = itemTypeMap.includes(typeParam) ? itemTypeMap.indexOf(typeParam) : 'all';
 
-	if (searchParamValue?.share) {
-		redirect(`/asset/${searchParamValue.share}`);
+	if (resolvedSearchParams?.share) {
+		redirect(`/asset/${resolvedSearchParams.share}`);
 	}
 
 	const cookieStore = await cookies();
@@ -53,7 +54,7 @@ export default async function Page({ params, searchParams }) {
 
 	const filterAnd = [
 		{ field: 'visibility', op: 'eq', value: 'public' },
-		...(itemType !== null ? [{ field: 'type', op: 'eq', value: itemType }] : []),
+		...(itemType !== 'all' ? [{ field: 'type', op: 'eq', value: itemType }] : []),
 	];
 
 	const queryParams = new URLSearchParams({

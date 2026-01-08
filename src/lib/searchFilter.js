@@ -20,17 +20,22 @@ currentFilter = defaultFilter();
 
 export const getFilter = () => currentFilter;
 
-export const setFilter = (newFilter) => {
+export const setFilter = (newFilter, { initial = false } = {}) => {
 	currentFilter = newFilter;
-	listeners.forEach((callback) => callback(currentFilter));
+
+	listeners.forEach((callback) => callback(newFilter, { initial }));
 };
 
 export const resetFilter = () => {
-	currentFilter = defaultFilter();
-	listeners.forEach((callback) => callback(currentFilter));
+	setFilter(defaultFilter(), { initial: true });
 };
 
-export const subscribeFilter = (callback) => {
+export const subscribeFilter = (callback, { emitCurrent = true } = {}) => {
 	listeners.add(callback);
+
+	if (emitCurrent && currentFilter) {
+		callback(currentFilter, { initial: true });
+	}
+
 	return () => listeners.delete(callback);
 };

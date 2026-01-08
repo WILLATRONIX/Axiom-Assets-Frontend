@@ -88,11 +88,15 @@ function AssetGrid({
 	};
 
 	useEffect(() => {
-		const unsubscribe = subscribeFilter((newFilter) => {
+		const unsubscribe = subscribeFilter((newFilter, { initial } = {}) => {
 			setSearchFilter(newFilter);
-			clearItems();
+
+			if (!initial) {
+				clearItems();
+			}
 		});
-		return () => unsubscribe();
+
+		return unsubscribe;
 	}, []);
 
 	const getChangedValues = (original, edited) => {
@@ -313,7 +317,7 @@ function AssetGrid({
 		setIsLoading(true);
 
 		const selectedFilter = filterOverride || searchFilter;
-		
+
 		const res = await get('/browse/get-assets', {
 			params: {
 				flags: JSON.stringify({

@@ -190,7 +190,7 @@ function App({ item }) {
 
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = `${item.header}.bp`;
+				link.download = `${item.header}.nbt`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);

@@ -1,6 +1,7 @@
 import { useState, Fragment, useMemo, useEffect } from 'react';
 
 import { getFilter, setFilter, subscribeFilter } from 'lib/searchFilter';
+import { useNotification } from 'lib/NotificationContext';
 
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
@@ -25,11 +26,16 @@ import FormControl from '@mui/joy/FormControl';
 import FormHelperText from '@mui/joy/FormHelperText';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 import Checkbox from '@mui/joy/Checkbox';
+import Autocomplete, { createFilterOptions } from '@mui/joy/Autocomplete';
+import AutocompleteOption from '@mui/joy/AutocompleteOption';
+import ListItemDecorator from '@mui/joy/ListItemDecorator';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import ClearIcon from '@mui/icons-material/Clear';
-import ReplayIcon from '@mui/icons-material/Replay';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
+const filter = createFilterOptions();
 
 const fieldContext = {
 	type: {
@@ -470,13 +476,17 @@ export default function MoreFilterModal({ open, setOpen }) {
 
 	const encodeFilterSettings = () => {
 		const json = JSON.stringify(rootGroup);
-		return btoa(unescape(encodeURIComponent(json)));
+		return btoa(encodeURIComponent(json));
 	};
 
+	const [savedFilterCodes, setSavedFilterCodes] = useState([]);
+	const [savedFiltersSearchValue, setSavedFiltersSearchValue] = useState('');
 	const [filterCode, setFilterCode] = useState(encodeFilterSettings());
 	const [sorts, setSorts] = useState(() => parseGlobalSorts(initialGlobalFilter));
 
 	const [savedOnly, setSavedOnly] = useState(initialGlobalFilter.savedOnly);
+
+	const { notify } = useNotification();
 
 	const serializedRootGroup = useMemo(() => {
 		const str = JSON.stringify(rootGroup);
@@ -487,31 +497,13 @@ export default function MoreFilterModal({ open, setOpen }) {
 		};
 	}, [rootGroup]);
 
-	const defaultRootGroup = {
-		operator: 'and',
-		conditions: [
-			{
-				field: 'visibility',
-				op: 'eq',
-				value: 'public',
-			},
-		],
-	};
-
 	useEffect(() => {
 		setFilterCode(encodeFilterSettings());
 	}, [rootGroup]);
 
 	const decodeFilterSettings = (base64) => {
-		const json = decodeURIComponent(escape(atob(base64)));
+		const json = decodeURIComponent(atob(base64));
 		return JSON.parse(json);
-	};
-
-	const handleSetRootGroup = (event) => {
-		try {
-			const decoded = decodeFilterSettings(event.target.value);
-			setRootGroup(decoded);
-		} catch (error) {}
 	};
 
 	const updateSort = (index, newSort) => {
@@ -546,30 +538,88 @@ export default function MoreFilterModal({ open, setOpen }) {
 		return { [operator]: filters };
 	}
 
-	const handleClose = () => {
-		const filter = transformGroupToFilter(rootGroup) ?? {};
-		const finalSorts = sorts.filter((s) => s.field);
+	const handleClose = (group = rootGroup) => {
+		const filter = transformGroupToFilter(group) ?? {};
+		const sortedSorts = sorts.filter((s) => s.field);
 
 		const result = {
 			filter,
-			sort: finalSorts.length ? finalSorts : [{ field: 'date_created', direction: 'asc' }],
+			sort: sortedSorts,
 			savedOnly: savedOnly,
-			userCreated: true,
 		};
 
 		setFilter(result);
 		setOpen(false);
 	};
 
+	const deleteSavedFilter = (value) => {
+		const [key, label] = value;
+		const newSavedFilters = Object.fromEntries(savedFilterCodes);
+		delete newSavedFilters[key];
+
+		localStorage.setItem('savedFilters', JSON.stringify(newSavedFilters));
+		setSavedFilterCodes(Object.entries(newSavedFilters));
+		notify(`${label} has been deleted.`);
+		setSavedFiltersSearchValue('');
+	};
+
+	const loadSavedFilter = (newValue) => {
+		if (newValue === null) return;
+		const [code, label] = newValue;
+
+		setSavedFiltersSearchValue(label);
+		const settings = decodeFilterSettings(code);
+		setRootGroup(settings);
+	};
+
+	const saveFilter = (newValue) => {
+		const [_, label] = newValue;
+
+		const savedFilters = JSON.parse(localStorage.getItem('savedFilters')) || {};
+		const newFilterCode = encodeFilterSettings();
+
+		const existingFilter = savedFilters[filterCode];
+
+		if (existingFilter) {
+			notify(`This filter already exists as "${existingFilter}"`, { color: 'danger' });
+			setSavedFiltersSearchValue('');
+			return;
+		}
+
+		const newSavedFilters = { ...savedFilters, [newFilterCode]: label };
+		localStorage.setItem('savedFilters', JSON.stringify(newSavedFilters));
+
+		setSavedFilterCodes(Object.entries(newSavedFilters));
+		notify(`${label} has been saved.`);
+		setSavedFiltersSearchValue(label);
+	};
+
 	useEffect(() => {
-		const unsubscribe = subscribeFilter((newFilter) => {
+		const unsubscribe = subscribeFilter((newFilter, { initial } = {}) => {
 			const newRootGroup = parseFilterToRootGroup(newFilter.filter);
 			setRootGroup(newRootGroup);
 
 			const newSorts = parseGlobalSorts(newFilter);
 			setSorts(newSorts);
+
+			if (initial) {
+				const fc = newFilter.baseFilter.filterCode;
+				if (fc) {
+					const settings = decodeFilterSettings(fc);
+					handleClose(settings);
+					setRootGroup(settings);
+				}
+			}
 		});
-		return () => unsubscribe();
+
+		return unsubscribe;
+	}, []);
+
+	useEffect(() => {
+		const savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+		if (savedFilters) {
+			setSavedFilterCodes(Object.entries(savedFilters));
+		}
 	}, []);
 
 	return (
@@ -581,20 +631,117 @@ export default function MoreFilterModal({ open, setOpen }) {
 					<Divider />
 					<DialogContent sx={{ gap: 1.5 }}>
 						<Box>
-							<Typography level="title-md">Filter Code (copy/paste)</Typography>
-							<Input
-								value={filterCode}
-								onChange={handleSetRootGroup}
-								endDecorator={
-									<IconButton variant="soft" onClick={() => setRootGroup(defaultRootGroup)}>
-										<ReplayIcon />
-									</IconButton>
-								}
-							/>
+							<Typography level="title-md">Saved Filters</Typography>
+							<Box>
+								<Autocomplete
+									placeholder="Search saved presets..."
+									value={savedFiltersSearchValue}
+									onChange={(event, newValue) => {
+										if (typeof newValue === 'string') {
+											saveFilter(newValue);
+										} else if (newValue && newValue[0] === 'newValue') {
+											saveFilter(newValue);
+										} else {
+											loadSavedFilter(newValue);
+										}
+									}}
+									filterOptions={(options, params) => {
+										const filtered = filter(options, params);
+
+										const { inputValue } = params;
+
+										const isExisting = options.some((option) => inputValue === option);
+										if (inputValue !== '' && !isExisting) {
+											filtered.push(['newValue', inputValue]);
+										}
+
+										return filtered;
+									}}
+									selectOnFocus
+									clearOnBlur
+									handleHomeEndKeys
+									freeSolo
+									options={savedFilterCodes}
+									getOptionLabel={(option) => {
+										if (typeof option === 'string') {
+											return option;
+										}
+
+										const [_, label] = option;
+										return label;
+									}}
+									getOptionKey={(option) => {
+										if (typeof option === 'string') return option;
+										const [code, _] = option;
+										return code;
+									}}
+									renderOption={(props, option) => {
+										const { key, ...rest } = props;
+
+										if (typeof option === 'string') {
+											return (
+												<AutocompleteOption key={key} {...rest}>
+													{option}
+												</AutocompleteOption>
+											);
+										}
+
+										const [code, label] = option;
+
+										return (
+											<AutocompleteOption
+												key={key}
+												{...rest}
+												sx={{
+													display: 'flex',
+													justifyContent: code !== 'newValue' && 'space-between',
+												}}
+											>
+												{code === 'newValue' ? (
+													<>
+														<ListItemDecorator>
+															<AddIcon />
+														</ListItemDecorator>
+														{`Save filter as "${label}"`}
+													</>
+												) : (
+													<>
+														{label}
+														<ListItemDecorator>
+															<Tooltip title={`Delete ${label}`}>
+																<IconButton
+																	size="sm"
+																	color="danger"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		deleteSavedFilter(option);
+																	}}
+																>
+																	<DeleteOutlineIcon />
+																</IconButton>
+															</Tooltip>
+														</ListItemDecorator>
+													</>
+												)}
+											</AutocompleteOption>
+										);
+									}}
+									sx={{ flex: 1 }}
+									variant="soft"
+								/>
+							</Box>
 						</Box>
 						<Box>
 							<Typography level="title-md">Filter</Typography>
-							<FilterGroup group={rootGroup} setGroup={setRootGroup} root />
+
+							<FilterGroup
+								group={rootGroup}
+								setGroup={(newValue) => {
+									setRootGroup(newValue);
+									setSavedFiltersSearchValue('');
+								}}
+								root
+							/>
 						</Box>
 
 						<Box>

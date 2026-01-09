@@ -21,9 +21,9 @@ currentFilter = defaultFilter();
 export const getFilter = () => currentFilter;
 
 export const setFilter = (newFilter, { initial = false } = {}) => {
-	currentFilter = newFilter;
-
-	listeners.forEach((callback) => callback(newFilter, { initial }));
+	currentFilter = {...currentFilter, ...newFilter};
+	console.log(currentFilter)
+	listeners.forEach((callback) => callback(currentFilter, { initial }));
 };
 
 export const resetFilter = () => {

@@ -45,7 +45,7 @@ function BrowseGrid({ initialUserData, initialAssetData, initialFilter }) {
 			},
 			{ initial: true }
 		);
-	}, [initialFilter]);
+	}, []);
 
 	return (
 		<Box sx={{ backgroundColor: 'var(--joy-palette-background-surface)' }}>

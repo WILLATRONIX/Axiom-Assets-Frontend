@@ -22,6 +22,8 @@ export default async function Page(props) {
 	const typeParam = resolvedSearchParams?.type ?? null;
 	const itemType = itemTypeMap.includes(typeParam) ? itemTypeMap.indexOf(typeParam) : 'all';
 
+	const filterCodeParam = resolvedSearchParams?.filter;
+
 	if (resolvedSearchParams?.share) {
 		redirect(`/asset/${resolvedSearchParams.share}`);
 	}
@@ -91,6 +93,7 @@ export default async function Page(props) {
 			itemType: itemType ?? 0,
 			searchQuery: '',
 			searchQueryField: 'header',
+			filterCode: filterCodeParam,
 		},
 		filter: { and: filterAnd },
 	};

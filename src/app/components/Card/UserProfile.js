@@ -126,12 +126,12 @@ function App({ userName }) {
 	};
 
 	useEffect(() => {
-		const unsubscribe = subscribeFilter((newFilter) => {
+		const unsubscribe = subscribeFilter((newFilter, { initial } = {}) => {
 			setSearchFilter(newFilter);
 			setSortBy(newFilter.sort[0]?.field || 'date_created');
 			setSortOrder(newFilter.sort[0]?.direction || 'desc');
 		});
-		return () => unsubscribe();
+		return unsubscribe;
 	}, []);
 
 	useEffect(() => {
@@ -184,7 +184,7 @@ function App({ userName }) {
 	}, []);
 
 	useEffect(() => {
-		const currentFilter = getFilter()
+		const currentFilter = getFilter();
 		setFilter({
 			...currentFilter,
 			filter: {

@@ -194,6 +194,11 @@ const BrowseNavbar = ({}) => {
 					variant="soft"
 					value={searchType}
 					onChange={handleSortTypeChange}
+					slotProps={{
+						listbox: {
+							placement: 'bottom-start',
+						},
+					}}
 				>
 					<Option value={'all'}>All</Option>
 					<Option value={0}>Blueprint</Option>
@@ -234,6 +239,11 @@ const BrowseNavbar = ({}) => {
 						variant="soft"
 						value={sortBy}
 						onChange={handleSortByChange}
+						slotProps={{
+							listbox: {
+								placement: 'bottom-end',
+							},
+						}}
 					>
 						<Option value="downloads">Downloads</Option>
 						<Option value="saves">Saves</Option>
@@ -263,6 +273,11 @@ const BrowseNavbar = ({}) => {
 								backgroundColor: 'transparent',
 							}}
 							onChange={handleSearchTypeChange}
+							slotProps={{
+								listbox: {
+									placement: 'bottom-start',
+								},
+							}}
 						>
 							<Option value={'header'}>Asset</Option>
 							<Option value={'publisher.display_name'}>Publisher</Option>

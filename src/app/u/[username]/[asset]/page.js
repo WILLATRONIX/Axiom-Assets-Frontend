@@ -1,15 +1,14 @@
-import { formatDistanceToNow } from 'date-fns';
-import { notFound } from 'next/navigation';
-import { get } from 'lib/network';
-import AssetPage from 'components/Card/AssetPage';
-import Box from '@mui/joy/Box';
-import Navbar from 'components/Navbar/Navbar';
-
+import { formatDistanceToNow } from "date-fns";
+import { notFound } from "next/navigation";
+import { get } from "lib/network";
+import AssetPage from "components/Card/AssetPage";
+import Box from "@mui/joy/Box";
+import Navbar from "components/Navbar/Navbar";
 
 async function getItemByUUID(uuid) {
 	try {
 		const res = await get(
-			'/browse/get-new-item',
+			"/browse/get-new-item",
 			{
 				params: {
 					flags: JSON.stringify({
@@ -17,9 +16,9 @@ async function getItemByUUID(uuid) {
 					}),
 				},
 			},
-			{ ssr: true }
+			{ ssr: true },
 		);
-		
+
 		return res.data.assetData;
 	} catch (error) {
 		notFound();
@@ -29,28 +28,30 @@ async function getItemByUUID(uuid) {
 export async function generateMetadata({ params }) {
 	const { asset } = await params;
 
-	const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+	const uuidV4Regex =
+		/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 	const isUUID = uuidV4Regex.test(asset);
 
 	// console.log(isUUID)
 
 	const item = await getItemByUUID(asset);
-	
-	
-	if (!item) return { title: 'Asset not found' };
 
-	const dateCreated = formatDistanceToNow(new Date(item.date_created), { addSuffix: true });
+	if (!item) return { title: "Asset not found" };
+
+	const dateCreated = formatDistanceToNow(new Date(item.date_created), {
+		addSuffix: true,
+	});
 
 	return {
 		title: item.header,
-		description: item.desc_value || 'No description.',
+		description: item.desc_value || "No description.",
 		openGraph: {
 			title: item.header,
-			description: item.desc_value || 'No description.',
-			url: `https://axiomassets.net/u/${item.publisherData.username}/${item.uuid}`,
-			type: 'article',
+			description: item.desc_value || "No description.",
+			url: `https://axiomassets.net/u/${item.publisher_user?.username}/${item.uuid}`,
+			type: "article",
 			publishedTime: dateCreated,
-			authors: [item.publisherData.username],
+			authors: [item.publisher_user?.username],
 			images: [
 				{
 					url: `https://cdn.axiomassets.net/thumbnail/${item.uuid}/thumb.webp`,
@@ -61,13 +62,15 @@ export async function generateMetadata({ params }) {
 			],
 		},
 		twitter: {
-			card: 'summary_large_image',
+			card: "summary_large_image",
 			title: item.header,
-			description: item.desc_value || 'No description.',
-			images: [`https://cdn.axiomassets.net/thumbnail/${item.uuid}/thumb.webp`],
+			description: item.desc_value || "No description.",
+			images: [
+				`https://cdn.axiomassets.net/thumbnail/${item.uuid}/thumb.webp`,
+			],
 		},
 		alternates: {
-			canonical: `https://axiomassets.net/u/${item.publisherData.username}/${item.uuid}`,
+			canonical: `https://axiomassets.net/u/${item.publisher_user?.username}/${item.uuid}`,
 		},
 	};
 }
@@ -80,16 +83,16 @@ export default async function Page({ params }) {
 	return (
 		<Box
 			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				width: '100%',
-				height: '100vh',
-				bgcolor: 'background.surface',
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100vh",
+				bgcolor: "background.surface",
 				gap: 2,
 			}}
 		>
 			<Navbar />
-			<Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+			<Box sx={{ flexGrow: 1, overflowY: "auto" }}>
 				<AssetPage item={item} />
 			</Box>
 		</Box>

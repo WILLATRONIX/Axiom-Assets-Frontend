@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
-import { getFilter, subscribeFilter, setFilter } from 'lib/searchFilter';
-import { post, get } from 'lib/network';
-import { useAuth } from 'lib/auth/authContext.js';
-import { useNotification } from 'lib/NotificationContext';
+import { getFilter, subscribeFilter, setFilter } from "lib/searchFilter";
+import { post, get } from "lib/network";
+import { useAuth } from "lib/auth/authContext.js";
+import { useNotification } from "lib/NotificationContext";
 
-import EditItemModal from 'components/Modal/EditItem';
-import ReportItemModal from 'components/Modal/ReportItemModal';
-import ShareItemModal from 'components/Modal/ShareItemModal';
-import ItemCard from 'components/Card/ItemCard';
+import EditItemModal from "components/Modal/EditItem";
+import ReportItemModal from "components/Modal/ReportItemModal";
+import ShareItemModal from "components/Modal/ShareItemModal";
+import ItemCard from "components/Card/ItemCard";
 
-import Skeleton from '@mui/joy/Skeleton';
-import Modal from '@mui/joy/Modal';
-import ModalDialog from '@mui/joy/ModalDialog';
-import DialogTitle from '@mui/joy/DialogTitle';
-import DialogContent from '@mui/joy/DialogContent';
-import DialogActions from '@mui/joy/DialogActions';
-import Button from '@mui/joy/Button';
-import Divider from '@mui/joy/Divider';
-import Box from '@mui/joy/Box';
+import Skeleton from "@mui/joy/Skeleton";
+import Modal from "@mui/joy/Modal";
+import ModalDialog from "@mui/joy/ModalDialog";
+import DialogTitle from "@mui/joy/DialogTitle";
+import DialogContent from "@mui/joy/DialogContent";
+import DialogActions from "@mui/joy/DialogActions";
+import Button from "@mui/joy/Button";
+import Divider from "@mui/joy/Divider";
+import Box from "@mui/joy/Box";
 
-import DeleteForever from '@mui/icons-material/DeleteForever';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ReportIcon from '@mui/icons-material/FlagOutlined';
-import EditIcon from '@mui/icons-material/Edit';
-import ShareIcon from '@mui/icons-material/ShareOutlined';
+import DeleteForever from "@mui/icons-material/DeleteForever";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ReportIcon from "@mui/icons-material/FlagOutlined";
+import EditIcon from "@mui/icons-material/Edit";
+import ShareIcon from "@mui/icons-material/ShareOutlined";
 
 function AssetGrid({
 	itemWidth = 200,
@@ -41,8 +41,10 @@ function AssetGrid({
 	totalItemLimit = Number.MAX_SAFE_INTEGER,
 	filterOverride = null,
 }) {
-	const [assets, setAssets] = useState(initialAssetData.rows);
-	const [totalItemCount, setTotalItemCount] = useState(initialAssetData.count);
+	const [assets, setAssets] = useState(initialAssetData?.rows ?? []);
+	const [totalItemCount, setTotalItemCount] = useState(
+		initialAssetData?.count ?? 0,
+	);
 
 	const [hasNoItems, setHasNoItems] = useState(false);
 
@@ -70,7 +72,7 @@ function AssetGrid({
 	const router = useRouter();
 	const { notify } = useNotification();
 
-	const hasInitialAssets = initialAssetData.count > 0;
+	const hasInitialAssets = initialAssetData?.count > 0;
 
 	useEffect(() => {
 		if (user && !loadingUser) {
@@ -105,8 +107,15 @@ function AssetGrid({
 		for (const key in edited) {
 			if (!Object.prototype.hasOwnProperty.call(original, key)) {
 				changes[key] = edited[key];
-			} else if (typeof edited[key] === 'object' && edited[key] !== null && !Array.isArray(edited[key])) {
-				const nestedChanges = getChangedValues(original[key], edited[key]);
+			} else if (
+				typeof edited[key] === "object" &&
+				edited[key] !== null &&
+				!Array.isArray(edited[key])
+			) {
+				const nestedChanges = getChangedValues(
+					original[key],
+					edited[key],
+				);
 				if (Object.keys(nestedChanges).length > 0) {
 					changes[key] = nestedChanges;
 				}
@@ -120,7 +129,9 @@ function AssetGrid({
 
 	const deleteItem = async (item) => {
 		try {
-			const response = await post(`${process.env.NEXT_PUBLIC_API_URL}/asset/delete/${item.uuid}`);
+			const response = await post(
+				`${process.env.NEXT_PUBLIC_API_URL}/asset/delete/${item.uuid}`,
+			);
 
 			if (response.ok) {
 				notify(`Deleted ${item.header}`);
@@ -129,7 +140,7 @@ function AssetGrid({
 			setDeleteModalOpen(false);
 			clearItems();
 		} catch (error) {
-			notify(`Failed to delete ${item.header}`, 'danger');
+			notify(`Failed to delete ${item.header}`, { color: "danger" });
 		}
 	};
 
@@ -144,7 +155,7 @@ function AssetGrid({
 			uuid,
 			type,
 			header,
-			description: desc_value === null ? '' : desc_value,
+			description: desc_value === null ? "" : desc_value,
 			tags,
 			visibility,
 			thumbnail: thumbData,
@@ -174,23 +185,26 @@ function AssetGrid({
 		const edits = Object.keys(diff);
 
 		const thumbForm = new FormData();
-		thumbForm.append('editValues', JSON.stringify(edits));
-		thumbForm.append('editData', JSON.stringify(diff));
+		thumbForm.append("editValues", JSON.stringify(edits));
+		thumbForm.append("editData", JSON.stringify(diff));
 
-		await post(`${process.env.NEXT_PUBLIC_API_URL}/asset/edit/${uuid}`, thumbForm);
+		await post(
+			`${process.env.NEXT_PUBLIC_API_URL}/asset/edit/${uuid}`,
+			thumbForm,
+		);
 		clearItems();
 
-		notify('Asset updated');
+		notify("Asset updated");
 
-		if (edits.includes('thumbnail')) {
-			notify('Your browser will take some time to update the image.');
+		if (edits.includes("thumbnail")) {
+			notify("Your browser will take some time to update the image.");
 		}
 	};
 
 	const handleLoginSuggestionClick = async (createAccount) => {
-		localStorage.setItem('shownSuggestLogin', true);
+		localStorage.setItem("shownSuggestLogin", true);
 		if (createAccount) {
-			router.push('/auth');
+			router.push("/auth");
 		}
 		setSuggestLoginModalOpen(false);
 		setSuggestCreateAccount(false);
@@ -199,14 +213,14 @@ function AssetGrid({
 	const handleDownloadBlueprint = async (item) => {
 		try {
 			const response = await get(`/blueprint/${item.uuid}/blueprint.bp`, {
-				baseURL: 'https://cdn.axiomassets.net',
-				responseType: 'blob',
+				baseURL: "https://cdn.axiomassets.net",
+				responseType: "blob",
 			});
 			if (response.ok) {
 				await get(`/download/${item.uuid}/none`);
 				const blob = response.data;
 
-				const link = document.createElement('a');
+				const link = document.createElement("a");
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
@@ -216,67 +230,67 @@ function AssetGrid({
 				console.error(`Download failed (${item.uuid}/blueprint.bp`);
 			}
 		} catch (error) {
-			console.error('Failed to download: ', error);
+			console.error("Failed to download: ", error);
 		}
 	};
 
 	const handleCopyTheme = async (item) => {
 		try {
 			const themeText = `AxiomInstall~SetTheme~${item.header} By ${
-				item.publisherData.username
-			}'~${item.value.replace(/\s+/g, '')}`;
+				item.publisher_user?.username
+			}'~${item.value.replace(/\s+/g, "")}`;
 			await navigator.clipboard.writeText(themeText);
 			await get(`/download/${item.uuid}/none`);
-			notify('Theme Copied');
+			notify("Theme Copied");
 		} catch (e) {
-			notify('Failed to copy theme', 'danger');
+			notify("Failed to copy theme", { color: "danger" });
 		}
 	};
 
 	const handleDownloadPreset = async (item) => {
 		try {
 			const res = await get(`/preset/${item.uuid}/preset.nbt`, {
-				baseURL: 'https://cdn.axiomassets.net',
-				responseType: 'blob',
+				baseURL: "https://cdn.axiomassets.net",
+				responseType: "blob",
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
 				const blob = res.data;
 
-				const link = document.createElement('a');
+				const link = document.createElement("a");
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.bp`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
 			} else {
-				notify('Failed to download preset', 'danger');
+				notify("Failed to download preset", { color: "danger" });
 			}
 		} catch (e) {
-			notify('Failed to download preset', 'danger');
+			notify("Failed to download preset", { color: "danger" });
 		}
 	};
 
 	const handleDownloadAssetPack = async (item) => {
 		try {
 			const res = await get(`/asset-pack/${item.uuid}/pack.zip`, {
-				baseURL: 'https://cdn.axiomassets.net',
-				responseType: 'blob',
+				baseURL: "https://cdn.axiomassets.net",
+				responseType: "blob",
 			});
 			if (res.ok) {
 				await get(`/download/${item.uuid}/none`);
 				const blob = res.data;
-				const link = document.createElement('a');
+				const link = document.createElement("a");
 				link.href = URL.createObjectURL(blob);
 				link.download = `${item.header}.zip`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
 			} else {
-				notify('Failed to download asset pack', 'danger');
+				notify("Failed to download asset pack", { color: "danger" });
 			}
 		} catch (e) {
-			notify('Failed to download asset pack', 'danger');
+			notify("Failed to download asset pack", { color: "danger" });
 		}
 	};
 
@@ -312,13 +326,15 @@ function AssetGrid({
 		if (isLoading || hasNoItems) return;
 
 		const adjustedFetchLimit =
-			fetchItemsLimit + assets.length > totalItemLimit ? totalItemLimit - assets.length : fetchItemsLimit;
+			fetchItemsLimit + assets.length > totalItemLimit
+				? totalItemLimit - assets.length
+				: fetchItemsLimit;
 
 		setIsLoading(true);
 
 		const selectedFilter = filterOverride || searchFilter;
 
-		const res = await get('/browse/get-assets', {
+		const res = await get("/browse/get-assets", {
 			params: {
 				flags: JSON.stringify({
 					...selectedFilter,
@@ -329,7 +345,7 @@ function AssetGrid({
 		});
 
 		if (!res.ok) {
-			notify('Failed to load assets', 'danger');
+			notify("Failed to load assets", { color: "danger" });
 			setHasNoItems(true);
 			setIsLoading(false);
 		}
@@ -344,14 +360,19 @@ function AssetGrid({
 			setHasNoItems(true);
 		}
 
-		if (totalItemLimit && assets.length + res.data.rows.length > totalItemLimit) {
+		if (
+			totalItemLimit &&
+			assets.length + res.data.rows.length > totalItemLimit
+		) {
 			setHasNoItems(true);
 			setTotalItemCount(0);
 			return;
 		}
 
 		setAssets((prev) => [...prev, ...res.data.rows]);
-		setTotalItemCount(totalItemLimit < res.data.count ? totalItemLimit : res.data.count);
+		setTotalItemCount(
+			totalItemLimit < res.data.count ? totalItemLimit : res.data.count,
+		);
 		setIndex((prev) => prev + adjustedFetchLimit);
 
 		setIsLoading(false);
@@ -359,21 +380,21 @@ function AssetGrid({
 
 	useEffect(() => {
 		if (hasInitialAssets) {
-			setIndex(initialAssetData.rows.length);
+			setIndex(initialAssetData?.rows.length);
 		}
-	}, [initialAssetData.rows, hasInitialAssets]);
+	}, [initialAssetData?.rows, hasInitialAssets]);
 
 	useEffect(() => {
 		if (hasInitialAssets) {
-			setAssets(initialAssetData.rows);
+			setAssets(initialAssetData?.rows);
 		}
-	}, [initialAssetData.rows, hasInitialAssets]);
+	}, [initialAssetData?.rows, hasInitialAssets]);
 
 	useEffect(() => {
 		if (hasInitialAssets) {
-			setTotalItemCount(initialAssetData.count);
+			setTotalItemCount(initialAssetData?.count);
 		}
-	}, [initialAssetData.count, hasInitialAssets]);
+	}, [initialAssetData?.count, hasInitialAssets]);
 
 	useEffect(() => {
 		if (defaultItems.length > 0) {
@@ -382,7 +403,8 @@ function AssetGrid({
 	}, [defaultItems]);
 
 	useEffect(() => {
-		let shownSuggestLogin = JSON.parse(localStorage.getItem('shownSuggestLogin')) || false;
+		let shownSuggestLogin =
+			JSON.parse(localStorage.getItem("shownSuggestLogin")) || false;
 
 		if (shownSuggestLogin === false) {
 			setSuggestCreateAccount(true);
@@ -393,11 +415,15 @@ function AssetGrid({
 		const runObserver = () => {
 			const observer = new IntersectionObserver(
 				(entries) => {
-					if (entries[0].isIntersecting && readyToLoad && !hasNoItems) {
+					if (
+						entries[0].isIntersecting &&
+						readyToLoad &&
+						!hasNoItems
+					) {
 						fetchData();
 					}
 				},
-				{ threshold: 0.0 }
+				{ threshold: 0.0 },
 			);
 
 			if (triggerLoadRef.current) {
@@ -424,53 +450,70 @@ function AssetGrid({
 		<>
 			<Box
 				sx={{
-					display: 'grid',
+					display: "grid",
 					gridTemplateColumns: `repeat(auto-fill, ${itemWidth}px)`,
 					gap: 2,
-					alignItems: 'start',
-					width: '100%',
+					alignItems: "start",
+					width: "100%",
 				}}
 				ref={assets.length === 0 && triggerLoadRef}
 			>
 				{assets.map((item, i) => {
-					const skip = defaultItems.some((di) => di.uuid === item.uuid);
+					const skip = defaultItems.some(
+						(di) => di.uuid === item.uuid,
+					);
 					if (skip) return;
 
-					const editPerms = userData.uuid === item.publisher || userData.permission_level === 0;
+					const editPerms =
+						userData.uuid === item.publisher ||
+						userData.permission_level === 0;
 					const itemId = item.uuid ?? item.fileName;
 
-					const [w, h] = item.image_aspect_ratio.split(':').map(Number);
+					const [w, h] = item.image_aspect_ratio
+						.split(":")
+						.map(Number);
 					const adjustedWidth = (itemWidth * w) / h;
 					const colSpan = Math.ceil(adjustedWidth / itemWidth);
 
 					const defaultItemDropdownOptions = [
 						{
-							label: 'Open',
+							label: "Open",
 							icon: OpenInNewIcon,
 							action: () => {
 								window.open(
-									`/u/${item.publisherData.username}/${item.uuid}`,
-									'_blank',
-									'noopener,noreferrer'
+									`/u/${item.publisher_user?.username}/${item.uuid}`,
+									"_blank",
+									"noopener,noreferrer",
 								);
 							},
 						},
-						{ label: 'Share', icon: ShareIcon, action: handleShareClick },
+						{
+							label: "Share",
+							icon: ShareIcon,
+							action: handleShareClick,
+						},
 						...(editPerms
 							? [
 									{
-										label: 'Edit',
+										label: "Edit",
 										icon: EditIcon,
 										action: handleEditClick,
 									},
 									{
-										label: 'Delete',
+										label: "Delete",
 										icon: DeleteForever,
-										color: 'danger',
+										color: "danger",
 										action: handleDeleteClick,
 									},
-							  ]
-							: [{ label: 'Report', icon: ReportIcon, color: 'danger', action: handleReportClick }]),
+								]
+							: [
+									{
+										label: "Report",
+										icon: ReportIcon,
+										color: "danger",
+										action: handleReportClick,
+									},
+								]),
 					];
 
 					return (
@@ -486,9 +529,16 @@ function AssetGrid({
 								baseDiameter={itemWidth}
 								itemDiameter={adjustedWidth}
 								highlightSearchMatch={highlightSearchMatch}
-								userData={{ ...userData, canManageAsset: editPerms, userLoggedIn }}
+								userData={{
+									...userData,
+									canManageAsset: editPerms,
+									userLoggedIn,
+								}}
 								disableExpandItem={disableExpandItem}
-								dropdownOptions={optionsOverride || defaultItemDropdownOptions}
+								dropdownOptions={
+									optionsOverride ||
+									defaultItemDropdownOptions
+								}
 								handleDownload={handleAssetDownload}
 								baseFilter={searchFilter.baseFilter}
 							/>
@@ -502,16 +552,40 @@ function AssetGrid({
 							<Box
 								ref={isNextTrigger ? triggerLoadRef : null}
 								key={i}
-								sx={{ display: 'flex', flexDirection: 'column', gap: 1, height: itemWidth + 56 }}
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									gap: 1,
+									height: itemWidth + 56,
+								}}
 							>
-								<Skeleton variant="rectangular" sx={{ borderRadius: 'sm' }}>
-									<Box sx={{ width: itemWidth, height: itemWidth, pb: 1 }} />
+								<Skeleton
+									variant="rectangular"
+									sx={{ borderRadius: "sm" }}
+								>
+									<Box
+										sx={{
+											width: itemWidth,
+											height: itemWidth,
+											pb: 1,
+										}}
+									/>
 								</Skeleton>
-								<Skeleton variant="rectangular" sx={{ borderRadius: 'sm' }}>
-									<Box sx={{ width: itemWidth, height: 16 }} />
+								<Skeleton
+									variant="rectangular"
+									sx={{ borderRadius: "sm" }}
+								>
+									<Box
+										sx={{ width: itemWidth, height: 16 }}
+									/>
 								</Skeleton>
-								<Skeleton variant="rectangular" sx={{ borderRadius: 'sm' }}>
-									<Box sx={{ width: itemWidth, height: 10 }} />
+								<Skeleton
+									variant="rectangular"
+									sx={{ borderRadius: "sm" }}
+								>
+									<Box
+										sx={{ width: itemWidth, height: 10 }}
+									/>
 								</Skeleton>
 							</Box>
 						);
@@ -525,10 +599,21 @@ function AssetGrid({
 				item={selectedItem}
 				onConfirm={handleEditAsset}
 			/>
-			<ShareItemModal open={shareModalOpen} setOpen={setShareModalOpen} targetItem={selectedItem} />
-			<ReportItemModal open={reportModalOpen} setOpen={setReportModalOpen} targetItem={selectedItem} />
+			<ShareItemModal
+				open={shareModalOpen}
+				setOpen={setShareModalOpen}
+				targetItem={selectedItem}
+			/>
+			<ReportItemModal
+				open={reportModalOpen}
+				setOpen={setReportModalOpen}
+				targetItem={selectedItem}
+			/>
 
-			<Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+			<Modal
+				open={deleteModalOpen}
+				onClose={() => setDeleteModalOpen(false)}
+			>
 				<ModalDialog sx={{ width: 480 }}>
 					<DialogTitle>Permanently Delete Asset</DialogTitle>
 					<Divider />
@@ -536,27 +621,46 @@ function AssetGrid({
 						{`Are you sure you want to permanently delete "${selectedItem?.header}"?`}
 					</DialogContent>
 					<DialogActions>
-						<Button variant="solid" color="danger" onClick={() => deleteItem(selectedItem)}>
+						<Button
+							variant="solid"
+							color="danger"
+							onClick={() => deleteItem(selectedItem)}
+						>
 							Delete
 						</Button>
-						<Button variant="plain" color="neutral" onClick={() => setDeleteModalOpen(false)}>
+						<Button
+							variant="plain"
+							color="neutral"
+							onClick={() => setDeleteModalOpen(false)}
+						>
 							Cancel
 						</Button>
 					</DialogActions>
 				</ModalDialog>
 			</Modal>
-			<Modal open={suggestLoginModalOpen} onClose={() => setSuggestLoginModalOpen(false)}>
+			<Modal
+				open={suggestLoginModalOpen}
+				onClose={() => setSuggestLoginModalOpen(false)}
+			>
 				<ModalDialog sx={{ width: 480 }}>
 					<DialogTitle>Got spare assets?</DialogTitle>
 					<Divider />
 					<DialogContent>
-						By creating an account, you can upload as many of your asssets as you want.
+						By creating an account, you can upload as many of your
+						asssets as you want.
 					</DialogContent>
 					<DialogActions>
-						<Button variant="solid" onClick={() => handleLoginSuggestionClick(true)}>
+						<Button
+							variant="solid"
+							onClick={() => handleLoginSuggestionClick(true)}
+						>
 							Login
 						</Button>
-						<Button variant="plain" color="neutral" onClick={() => handleLoginSuggestionClick(false)}>
+						<Button
+							variant="plain"
+							color="neutral"
+							onClick={() => handleLoginSuggestionClick(false)}
+						>
 							Don't show again
 						</Button>
 					</DialogActions>

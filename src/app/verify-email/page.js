@@ -28,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 export default function LoginPage() {
 	const [emailArray, setEmailArray] = useState([]);
+	const [secondaryEmailArray, setSecondaryEmailArray] = useState([]);
 
 	const [userData, setUserData] = useState(null);
 
@@ -170,7 +171,10 @@ export default function LoginPage() {
 	const handleAddEmailClick = () => {
 		setActiveEmailEdit("");
 		setActiveEmailEditInput("");
-		setEmailArray((prev) => [...prev, { email: "", verified: false }]);
+		setEmailArray((prev) => [
+			...prev,
+			{ email: "", verified: false, provider: "axiomassets" },
+		]);
 	};
 
 	useEffect(() => {
@@ -270,6 +274,12 @@ export default function LoginPage() {
 							{emailArray?.map((item) => {
 								const isSelected =
 									activeEmailEdit === item.email;
+
+								const isLocal = item.provider === "axiomassets";
+								const providerFormatted =
+									item.provider.charAt(0).toUpperCase() +
+									item.provider.slice(1) +
+									" OAuth";
 
 								return (
 									<Card
@@ -374,7 +384,9 @@ export default function LoginPage() {
 													{item.verified && (
 														<VerifiedIcon />
 													)}
-													{item.email}
+													{isLocal
+														? item.email
+														: providerFormatted}
 												</Typography>
 											)}
 											{!isSelected && !item.verified && (

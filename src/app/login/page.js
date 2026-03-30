@@ -116,6 +116,7 @@ export default function LoginPage() {
 
 		if (res.ok) {
 			await fetchUserDetails();
+			router.push("/browse");
 		} else {
 			notify("Failed to sign in with Google", { color: "danger" });
 		}
@@ -150,6 +151,7 @@ export default function LoginPage() {
 
 			if (res.ok) {
 				await fetchUserDetails();
+				router.push("/browse");
 			} else {
 				notify("Failed to sign in with Microsoft", { color: "danger" });
 			}

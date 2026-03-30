@@ -34,7 +34,6 @@ export default async function Page(props) {
 	const token = cookieStore.get("jwt")?.value ?? null;
 
 	let initialUserData = null;
-	console.log(1);
 
 	if (token) {
 		try {
@@ -96,8 +95,6 @@ export default async function Page(props) {
 	} catch (e) {
 		console.error(e);
 	}
-
-	console.log(2);
 
 	const initialFilter = {
 		baseFilter: {

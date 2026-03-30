@@ -187,7 +187,7 @@ function App({ item }) {
 		event.stopPropagation();
 		try {
 			const themeText = `AxiomInstall~SetTheme~${assetData.header} By ${
-				assetData.publisherData.username
+				assetData.publisher_user.username
 			}'~${assetData.value.replace(/\s+/g, "")}`;
 			await navigator.clipboard.writeText(themeText);
 			await get(
@@ -377,9 +377,6 @@ function App({ item }) {
 							)}
 						</Box>
 					)}
-					<Typography level="body-xs">
-						I will update this page soon, its pretty ugly
-					</Typography>
 					<Divider />
 					<Box
 						sx={{
@@ -437,9 +434,9 @@ function App({ item }) {
 								<NextLink
 									style={linkStyle}
 									draggable={false}
-									href={`/user/profile/${assetData.publisherData.username}`}
+									href={`/user/profile/${assetData?.publisher_user?.username}`}
 								>
-									{assetData.publisherData.username}
+									{assetData?.publisher_user?.username}
 								</NextLink>
 								{`, `}
 								<RelativeTime date={assetData.date_created} />
@@ -599,7 +596,7 @@ function App({ item }) {
 								<Divider sx={{ my: 4 }} />
 							</>
 						)}
-						<Typography level="h4">{`More from ${assetData.publisherData.username}:`}</Typography>
+						<Typography level="h4">{`More from ${assetData?.publisher_user?.username}:`}</Typography>
 						<AssetGrid
 							itemWidth={153}
 							totalItemLimit={12}

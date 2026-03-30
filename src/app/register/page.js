@@ -257,6 +257,7 @@ export default function LoginPage() {
 								>
 									<Input
 										placeholder={"email"}
+										type="email"
 										variant={"soft"}
 										color={
 											showInputErrors && !validEmail

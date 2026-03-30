@@ -1,127 +1,149 @@
-'use client';
+"use client";
 
-import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
+import { Fragment, useState, useMemo, useEffect, useRef } from "react";
 
-import { post } from 'lib/network';
+import { post } from "lib/network";
 
-import EditItemModal from 'components/Modal/EditItem';
-import UploadTheme from 'components/Modal/Upload/Theme';
-import CatImageUpload from 'components/Modal/Upload/CatImage';
-import { useNotification } from 'lib/NotificationContext';
-import AssetGrid from 'components/Grid/AssetGrid';
+import EditItemModal from "components/Modal/EditItem";
+import UploadTheme from "components/Modal/Upload/Theme";
+import CatImageUpload from "components/Modal/Upload/CatImage";
+import { useNotification } from "lib/NotificationContext";
+import AssetGrid from "components/Grid/AssetGrid";
 
-import Button from '@mui/joy/Button';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Card from '@mui/joy/Card';
-import Dropdown from '@mui/joy/Dropdown';
-import MenuButton from '@mui/joy/MenuButton';
-import Menu from '@mui/joy/Menu';
-import MenuItem from '@mui/joy/MenuItem';
-import ListItemDecorator from '@mui/joy/ListItemDecorator';
-import LinearProgress from '@mui/joy/LinearProgress';
+import Button from "@mui/joy/Button";
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import Dropdown from "@mui/joy/Dropdown";
+import MenuButton from "@mui/joy/MenuButton";
+import Menu from "@mui/joy/Menu";
+import MenuItem from "@mui/joy/MenuItem";
+import ListItemDecorator from "@mui/joy/ListItemDecorator";
+import LinearProgress from "@mui/joy/LinearProgress";
+import UploadPreview from "components/Card/UploadPreview";
 
-import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
-import PetsIcon from '@mui/icons-material/Pets';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteForever from '@mui/icons-material/DeleteForever';
-import EditIcon from '@mui/icons-material/Edit';
+import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
+import PetsIcon from "@mui/icons-material/Pets";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteForever from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
 
 const toolSettings = {
 	Autoshade: [
-		'SunPitchRadians',
-		'SunYawRadians',
-		'PaletteMode',
-		'Dither',
-		'DoSunShading',
-		'BlockPercentages',
-		'PaletteFlags',
-		'GlobalIllumination',
-		'DoAmbientShading',
+		"SunPitchRadians",
+		"SunYawRadians",
+		"PaletteMode",
+		"Dither",
+		"DoSunShading",
+		"BlockPercentages",
+		"PaletteFlags",
+		"GlobalIllumination",
+		"DoAmbientShading",
 	],
 	Distort: [
-		'DistanceY',
-		'Seed',
-		'SmoothEdges',
-		'DistanceZ',
-		'DistortionScale',
-		'DistanceX',
-		'Iterations',
-		'SeparateAxis',
+		"DistanceY",
+		"Seed",
+		"SmoothEdges",
+		"DistanceZ",
+		"DistortionScale",
+		"DistanceX",
+		"Iterations",
+		"SeparateAxis",
 	],
 	Elevation: [
-		'Rate',
-		'CustomHeightmapSize',
-		'CustomHeightmapZoom',
-		'ApplyMode',
-		'Smoothing',
-		'Mode',
-		'Height',
-		'FalloffType',
-		'CustomHeightmapAsInts',
+		"Rate",
+		"CustomHeightmapSize",
+		"CustomHeightmapZoom",
+		"ApplyMode",
+		"Smoothing",
+		"Mode",
+		"Height",
+		"FalloffType",
+		"CustomHeightmapAsInts",
 	],
-	'Gradient Painter': [
-		'NoiseSeed',
-		'MaskSurface',
-		'ClampToEdge',
-		'GradientShape',
-		'BlockPercentages',
-		'GradientInterpolation',
+	"Gradient Painter": [
+		"NoiseSeed",
+		"MaskSurface",
+		"ClampToEdge",
+		"GradientShape",
+		"BlockPercentages",
+		"GradientInterpolation",
 	],
-	Melt: ['SmoothStrength', 'SmoothThreshold'],
-	'Noise Painter': [
-		'Anisotropic',
-		'BlockMode',
-		'Jitter',
-		'ThreeDimensional',
-		'Gain',
-		'Octaves',
-		'NoiseSeed',
-		'NoiseScaleY',
-		'NoiseScaleX',
-		'NoiseType',
-		'MaskSurface',
-		'NoiseScaleZ',
-		'BlockThresholds',
-		'Lacunarity',
-		'MetaballRange',
-		'W1',
-		'W2',
-		'W3',
+	Melt: ["SmoothStrength", "SmoothThreshold"],
+	"Noise Painter": [
+		"Anisotropic",
+		"BlockMode",
+		"Jitter",
+		"ThreeDimensional",
+		"Gain",
+		"Octaves",
+		"NoiseSeed",
+		"NoiseScaleY",
+		"NoiseScaleX",
+		"NoiseType",
+		"MaskSurface",
+		"NoiseScaleZ",
+		"BlockThresholds",
+		"Lacunarity",
+		"MetaballRange",
+		"W1",
+		"W2",
+		"W3",
 	],
 	Painter: [
-		'MinimumRadius',
-		'MaskSurface',
-		'NoiseSeed',
-		'SoftEdge',
-		'MergeStrokes',
-		'Mode',
-		'BlockPercentages',
-		'GradientInterpolation',
+		"MinimumRadius",
+		"MaskSurface",
+		"NoiseSeed",
+		"SoftEdge",
+		"MergeStrokes",
+		"Mode",
+		"BlockPercentages",
+		"GradientInterpolation",
 	],
 	Path: [
-		'PlayerPosY',
-		'KeepExisting',
-		'CatenaryInverted',
-		'CatenarySlack',
-		'PathPoints',
-		'PlayerPosX',
-		'PlayerPosZ',
-		'ExtendToGround',
-		'CurveType',
-		'Looped',
-		'Radius',
+		"PlayerPosY",
+		"KeepExisting",
+		"CatenaryInverted",
+		"CatenarySlack",
+		"PathPoints",
+		"PlayerPosX",
+		"PlayerPosZ",
+		"ExtendToGround",
+		"CurveType",
+		"Looped",
+		"Radius",
 	],
-	Rock: ['ReplaceSolidBlocks', 'NoiseSeed', 'SolidBlockInfluence', 'Noisiness', 'SmoothingStddev', 'NoiseRadius'],
-	Roughen: ['BrushHeight', 'RemoveBlocks', 'Ratio', 'AddBlocks', 'MinFaces'],
-	'Script Brush': ['Script'],
-	'Sculpt Draw': ['Strength', 'Invert', 'Denoise', 'MaskY'],
-	Shatter: ['BrushHeight', 'ShatterScale', 'UseActiveBlock', 'ShatterWidth', 'NoiseSeed', 'Axis'],
-	Slope: ['RaiseLowerMode', 'Smoothing', 'Shape', 'Height', 'FalloffType'],
-	Smooth: ['SmoothStrength', 'BlockRatio', 'FixEdges', 'MeltStableGrowMode'],
-	Stamp: ['BaseChance', 'Blueprints', 'RandomYaw', 'MinSpacingPercentage', 'RandomXZFlip', 'PlaceMode'],
-	'Tool Masks': ['mask', 'lua'],
-	Weld: ['SmoothStrength', 'ReplaceSolidBlocks', 'SmoothThreshold'],
+	Rock: [
+		"ReplaceSolidBlocks",
+		"NoiseSeed",
+		"SolidBlockInfluence",
+		"Noisiness",
+		"SmoothingStddev",
+		"NoiseRadius",
+	],
+	Roughen: ["BrushHeight", "RemoveBlocks", "Ratio", "AddBlocks", "MinFaces"],
+	"Script Brush": ["Script"],
+	"Sculpt Draw": ["Strength", "Invert", "Denoise", "MaskY"],
+	Shatter: [
+		"BrushHeight",
+		"ShatterScale",
+		"UseActiveBlock",
+		"ShatterWidth",
+		"NoiseSeed",
+		"Axis",
+	],
+	Slope: ["RaiseLowerMode", "Smoothing", "Shape", "Height", "FalloffType"],
+	Smooth: ["SmoothStrength", "BlockRatio", "FixEdges", "MeltStableGrowMode"],
+	Stamp: [
+		"BaseChance",
+		"Blueprints",
+		"RandomYaw",
+		"MinSpacingPercentage",
+		"RandomXZFlip",
+		"PlaceMode",
+	],
+	"Tool Masks": ["mask", "lua"],
+	Weld: ["SmoothStrength", "ReplaceSolidBlocks", "SmoothThreshold"],
 };
 
 const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
@@ -156,11 +178,14 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 		};
 
 		handleResize();
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	const columnCount = useMemo(() => Math.max(1, Math.floor(windowWidth / 160)) - 1, [windowWidth]);
+	const columnCount = useMemo(
+		() => Math.max(1, Math.floor(windowWidth / 160)) - 1,
+		[windowWidth],
+	);
 
 	const handleNewFile = (e) => {
 		setLoading(true);
@@ -169,7 +194,7 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 
 		selectedFiles.forEach((file) => {
 			const fileAlreadyExists = itemData.some((f) => {
-				const existingName = typeof f === 'object' ? f?.fileName : f;
+				const existingName = typeof f === "object" ? f?.fileName : f;
 				return existingName?.toLowerCase() === file.name?.toLowerCase();
 			});
 
@@ -181,15 +206,18 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 			}
 
 			if (file.size >= 5 * megabyte) {
-				notify('The blueprint cannot be larger than 5 megabytes.', 'danger');
+				notify(
+					"The blueprint cannot be larger than 5 megabytes.",
+					"danger",
+				);
 				setLoading(false);
 				return;
 			}
 
-			const extension = file.name.split('.').pop().toLowerCase();
+			const extension = file.name.split(".").pop().toLowerCase();
 
 			switch (extension) {
-				case 'bp':
+				case "bp":
 					const reader = new FileReader();
 					const fileSlice = file.slice(0, 4);
 
@@ -198,37 +226,48 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 						const uint8Array = new Uint8Array(arrayBuffer);
 
 						const extractedBytes =
-							(uint8Array[0] << 24) | (uint8Array[1] << 16) | (uint8Array[2] << 8) | uint8Array[3];
+							(uint8Array[0] << 24) |
+							(uint8Array[1] << 16) |
+							(uint8Array[2] << 8) |
+							uint8Array[3];
 
 						if (extractedBytes === MAGIC) {
 							try {
 								const formData = new FormData();
-								formData.append('file', file);
+								formData.append("file", file);
 
 								const response = await post(
 									`${process.env.NEXT_PUBLIC_API_URL}/upload/get-blueprint-header`,
-									formData
+									formData,
 								);
 
 								if (!response.ok) {
-									notify(`A network error has occurred. Please try again.`, 'danger');
+									notify(
+										`A network error has occurred. Please try again.`,
+										"danger",
+									);
 									setLoading(false);
 									return;
 								}
 
-								const { name, tags, blockCount, lockedThumbnail, thumbnail } = response.data.blueprint;
+								const {
+									name,
+									tags,
+									blockCount,
+									lockedThumbnail,
+									thumbnail,
+								} = response.data.blueprint;
 
 								const blueprintData = {
 									type: 0,
 									fileName: file.name,
 									fileSize: file.size,
 									header: name,
-									image_aspect_ratio: '1:1',
-									tags: tags.map((value) => value.toLowerCase()),
+									image_aspect_ratio: "1:1",
+									tags: tags.map((value) =>
+										value.toLowerCase(),
+									),
 									metric: blockCount,
-									publisherData: {
-										// username: 'username'
-									},
 									thumbnail: {
 										defaultBuffer: `data:image/png;base64,${thumbnail}`,
 										buffer: `data:image/png;base64,${thumbnail}`,
@@ -250,58 +289,88 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 								}
 							} catch (error) {
 								console.error(error);
-								notify('Server was unable to process blueprint data.', 'danger');
+								notify(
+									"Server was unable to process blueprint data.",
+									"danger",
+								);
 							}
 
-							setTotalFileSize((prevSize) => prevSize + file.size);
+							setTotalFileSize(
+								(prevSize) => prevSize + file.size,
+							);
 						} else {
-							notify(`Blueprint data for ${file.name} is invalid or corrupted.`, 'danger');
+							notify(
+								`Blueprint data for ${file.name} is invalid or corrupted.`,
+								"danger",
+							);
 						}
 					};
 
 					reader.readAsArrayBuffer(fileSlice);
 					break;
 
-				case 'nbt':
+				case "nbt":
 					const handlePreset = async () => {
 						try {
 							const formData = new FormData();
-							formData.append('file', file);
+							formData.append("file", file);
 
 							const response = await post(
 								`${process.env.NEXT_PUBLIC_API_URL}/upload/get-preset-data`,
-								formData
+								formData,
 							);
 
 							if (response.ok) {
 								const presetJson = response.data;
 
 								const presetTitle = presetJson.presetJson.Name;
-								const presetVersion = presetJson.presetJson.Version;
-								const presetSettings = presetJson.presetJson.Settings;
+								const presetVersion =
+									presetJson.presetJson.Version;
+								const presetSettings =
+									presetJson.presetJson.Settings;
 
 								let toolSettingsFiltered = [];
 
 								console.log(presetSettings);
 
-								for (const [compareSetting, _] of Object.entries(presetSettings)) {
-									for (const [defaultSettingTitle, defaultValues] of Object.entries(toolSettings)) {
-										if (Array.isArray(defaultValues) && defaultValues.includes(compareSetting)) {
-											toolSettingsFiltered.push(defaultSettingTitle);
+								for (const [
+									compareSetting,
+									_,
+								] of Object.entries(presetSettings)) {
+									for (const [
+										defaultSettingTitle,
+										defaultValues,
+									] of Object.entries(toolSettings)) {
+										if (
+											Array.isArray(defaultValues) &&
+											defaultValues.includes(
+												compareSetting,
+											)
+										) {
+											toolSettingsFiltered.push(
+												defaultSettingTitle,
+											);
 										}
 									}
 								}
 
-								const counts = toolSettingsFiltered.reduce((acc, item) => {
-									acc[item] = (acc[item] || 0) + 1;
-									return acc;
-								}, {});
-
-								const mostFrequentItem = Object.keys(counts).reduce((a, b) =>
-									counts[a] > counts[b] ? a : b
+								const counts = toolSettingsFiltered.reduce(
+									(acc, item) => {
+										acc[item] = (acc[item] || 0) + 1;
+										return acc;
+									},
+									{},
 								);
 
-								const toolName = mostFrequentItem.toLowerCase().replace(/\s+/g, '-');
+								const mostFrequentItem = Object.keys(
+									counts,
+								).reduce((a, b) =>
+									counts[a] > counts[b] ? a : b,
+								);
+
+								const toolName = mostFrequentItem
+									.toLowerCase()
+									.replace(/\s+/g, "-");
 
 								const presetData = {
 									type: 1,
@@ -323,12 +392,20 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 									return;
 								}
 
-								setTotalFileSize((prevSize) => prevSize + file.size);
+								setTotalFileSize(
+									(prevSize) => prevSize + file.size,
+								);
 							} else {
-								notify(`A network error has occurred. Please try again.`, 'danger');
+								notify(
+									`A network error has occurred. Please try again.`,
+									"danger",
+								);
 							}
 						} catch (error) {
-							notify(`Server was unable to process ${file.name}.`, 'danger');
+							notify(
+								`Server was unable to process ${file.name}.`,
+								"danger",
+							);
 							console.error(error);
 						}
 					};
@@ -337,7 +414,10 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 					break;
 
 				default:
-					notify(`Incorrect file format selected: ${file.name}`, 'danger');
+					notify(
+						`Incorrect file format selected: ${file.name}`,
+						"danger",
+					);
 					break;
 			}
 		});
@@ -350,17 +430,20 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 
 	const handleNextStep = () => {
 		if (itemData.length < 3) {
-			notify('Three or more assets are required.', 'danger');
+			notify("Three or more assets are required.", "danger");
 			return;
 		}
 
 		if (loading) {
-			notify('Loading has not finished. Please try again', 'danger');
+			notify("Loading has not finished. Please try again", "danger");
 			return;
 		}
 
 		if (totalFileSize >= (uploadType === 1 ? 100 : 10) * megabyte) {
-			notify('The maximum file size has been reached. Try removing assets or thumbnails', 'danger');
+			notify(
+				"The maximum file size has been reached. Try removing assets or thumbnails",
+				"danger",
+			);
 			return;
 		}
 
@@ -411,15 +494,18 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 				<Card
 					variant="plain"
 					sx={{
-						justifyContent: 'center',
-						alignItems: 'center',
-						width: '100%',
-						height: '100%',
-						display: 'flex',
+						justifyContent: "center",
+						alignItems: "center",
+						width: "100%",
+						height: "100%",
+						display: "flex",
 						m: 2,
 					}}
 				>
-					<Button startDecorator={<AddIcon />} onClick={handleUploadClick}>
+					<Button
+						startDecorator={<AddIcon />}
+						onClick={handleUploadClick}
+					>
 						Add File
 					</Button>
 					<Dropdown>
@@ -445,15 +531,22 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 			) : (
 				<Box
 					sx={{
-						width: '100%',
-						height: 'auto',
-						display: 'flex',
+						width: "100%",
+						height: "auto",
+						display: "flex",
 						m: 2,
 						gap: 2,
 					}}
 				>
-					<Box sx={{ gap: 2, display: 'flex', flexDirection: 'column', width: '100%' }}>
-						<Box sx={{ gap: 2, display: 'flex', mr: 4 }}>
+					<Box
+						sx={{
+							gap: 2,
+							display: "flex",
+							flexDirection: "column",
+							width: "100%",
+						}}
+					>
+						<Box sx={{ gap: 2, display: "flex", mr: 4 }}>
 							<Button
 								startDecorator={<AddIcon />}
 								onClick={handleUploadClick}
@@ -463,7 +556,10 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 								Add Files
 							</Button>
 							{/* <Button disabled={itemData.length === 0}>Actions</Button> */}
-							<Button onClick={() => handleNextStep(itemData)} disabled={itemData.length < 3}>
+							<Button
+								onClick={() => handleNextStep(itemData)}
+								disabled={itemData.length < 3}
+							>
 								Next
 							</Button>
 							<LinearProgress
@@ -472,16 +568,24 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 								thickness={24}
 								value={Math.min(
 									100,
-									totalFileSize / (((uploadType === 1 ? 100 : 10) * megabyte) / 100)
+									totalFileSize /
+										(((uploadType === 1 ? 100 : 10) *
+											megabyte) /
+											100),
 								)}
 								variant="soft"
-								color={totalFileSize >= (uploadType === 1 ? 100 : 10) * megabyte ? 'danger' : 'primary'}
+								color={
+									totalFileSize >=
+									(uploadType === 1 ? 100 : 10) * megabyte
+										? "danger"
+										: "primary"
+								}
 								sx={{
-									'--LinearProgress-radius': '6px',
-									'--LinearProgress-thickness': '36px',
+									"--LinearProgress-radius": "6px",
+									"--LinearProgress-thickness": "36px",
 									top: 0,
 									left: 0,
-									width: '100%',
+									width: "100%",
 									zIndex: 0,
 								}}
 							>
@@ -489,10 +593,10 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 									level="body-sm"
 									textColor="common.white"
 									sx={{
-										fontWeight: 'xl',
-										position: 'absolute',
-										width: '100%',
-										textAlign: 'center',
+										fontWeight: "xl",
+										position: "absolute",
+										width: "100%",
+										textAlign: "center",
 										zIndex: 2,
 									}}
 								>
@@ -500,25 +604,19 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 								</Typography>
 							</LinearProgress>
 						</Box>
-						{itemData.length < 3 && <Typography>{`${itemData.length}/3`}</Typography>}
-						<Box sx={{ overflow: 'auto' }}>
+						{itemData.length < 3 && (
+							<Typography>{`${itemData.length}/3`}</Typography>
+						)}
+						<Box sx={{ overflow: "auto" }}>
 							<AssetGrid
-								itemWidth={120}
+								itemWidth={160}
 								defaultItems={itemData}
+								fetchItems={false}
 								disableExpandItem
-								optionsOverride={[
-									{
-										label: 'Edit',
-										icon: EditIcon,
-										action: handleOpenEditMenu,
-									},
-									{
-										label: 'Remove',
-										icon: DeleteForever,
-										action: handleDeleteAsset,
-										color: 'danger',
-									},
-								]}
+								CustomItemComponent={UploadPreview}
+								CustomItemProps={{
+									onDelete: handleDeleteAsset,
+								}}
 							/>
 						</Box>
 					</Box>
@@ -537,7 +635,7 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 				type="file"
 				multiple={uploadType !== 0}
 				accept=".bp, .nbt"
-				style={{ display: 'none' }}
+				style={{ display: "none" }}
 				onChange={handleNewFile}
 			/>
 		</Fragment>

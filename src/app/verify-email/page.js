@@ -255,7 +255,7 @@ export default function LoginPage() {
 								width: "100%",
 							}}
 						>
-							{emailArray.length === 0 && (
+							{emailArray?.length === 0 && (
 								<Card
 									variant="soft"
 									sx={{
@@ -471,7 +471,7 @@ export default function LoginPage() {
 								</Button>
 							</Box>
 							<Box sx={{ display: "flex", gap: 1 }}>
-								<Tooltip
+								{/* <Tooltip
 									open={hasUnverifiedEmail && false}
 									title="Requires all emails to be verified before you can add a new one."
 									arrow
@@ -491,7 +491,7 @@ export default function LoginPage() {
 									>
 										Add Email
 									</Button>
-								</Tooltip>
+								</Tooltip>*/}
 								<Button
 									disabled={hasUnverifiedEmail}
 									color="primary"

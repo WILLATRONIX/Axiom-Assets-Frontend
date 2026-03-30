@@ -32,9 +32,11 @@ import ShareIcon from "@mui/icons-material/ShareOutlined";
 
 function AssetGrid({
 	itemWidth = 200,
-	readyToLoad = true,
+	fetchItems = false,
 	highlightSearchMatch = false,
 	defaultItems = [],
+	CustomItemComponent = null,
+	CustomItemProps = null,
 	disableExpandItem = false,
 	optionsOverride = null,
 	initialAssetData = { rows: [], count: 0 },
@@ -323,7 +325,7 @@ function AssetGrid({
 	};
 
 	const fetchData = useCallback(async () => {
-		if (isLoading || hasNoItems) return;
+		if (isLoading || hasNoItems || hasDefaultAssets) return;
 
 		const adjustedFetchLimit =
 			fetchItemsLimit + assets.length > totalItemLimit
@@ -399,6 +401,7 @@ function AssetGrid({
 	useEffect(() => {
 		if (defaultItems.length > 0) {
 			setAssets(defaultItems);
+			setTotalItemCount(defaultItems.length);
 		}
 	}, [defaultItems]);
 
@@ -417,7 +420,7 @@ function AssetGrid({
 				(entries) => {
 					if (
 						entries[0].isIntersecting &&
-						readyToLoad &&
+						fetchItems &&
 						!hasNoItems
 					) {
 						fetchData();
@@ -459,11 +462,6 @@ function AssetGrid({
 				ref={assets.length === 0 && triggerLoadRef}
 			>
 				{assets.map((item, i) => {
-					const skip = defaultItems.some(
-						(di) => di.uuid === item.uuid,
-					);
-					if (skip) return;
-
 					const editPerms =
 						userData.uuid === item.publisher ||
 						userData.permission_level === 0;
@@ -524,24 +522,31 @@ function AssetGrid({
 								height: itemWidth + 56,
 							}}
 						>
-							<ItemCard
-								item={item}
-								baseDiameter={itemWidth}
-								itemDiameter={adjustedWidth}
-								highlightSearchMatch={highlightSearchMatch}
-								userData={{
-									...userData,
-									canManageAsset: editPerms,
-									userLoggedIn,
-								}}
-								disableExpandItem={disableExpandItem}
-								dropdownOptions={
-									optionsOverride ||
-									defaultItemDropdownOptions
-								}
-								handleDownload={handleAssetDownload}
-								baseFilter={searchFilter.baseFilter}
-							/>
+							{CustomItemComponent === null ? (
+								<ItemCard
+									item={item}
+									baseDiameter={itemWidth}
+									itemDiameter={adjustedWidth}
+									highlightSearchMatch={highlightSearchMatch}
+									userData={{
+										...userData,
+										canManageAsset: editPerms,
+										userLoggedIn,
+									}}
+									disableExpandItem={disableExpandItem}
+									dropdownOptions={
+										optionsOverride ||
+										defaultItemDropdownOptions
+									}
+									handleDownload={handleAssetDownload}
+									baseFilter={searchFilter.baseFilter}
+								/>
+							) : (
+								<CustomItemComponent
+									itemData={item}
+									{...CustomItemProps}
+								/>
+							)}
 						</Box>
 					);
 				})}

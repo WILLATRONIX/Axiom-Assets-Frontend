@@ -8,7 +8,7 @@ import Navbar from "components/Navbar/Navbar";
 async function getItemByUUID(uuid) {
 	try {
 		const res = await get(
-			"/browse/get-new-item",
+			"/browse/get-assets",
 			{
 				params: {
 					flags: JSON.stringify({
@@ -21,6 +21,7 @@ async function getItemByUUID(uuid) {
 
 		return res.data.assetData;
 	} catch (error) {
+		console.error(error);
 		notFound();
 	}
 }

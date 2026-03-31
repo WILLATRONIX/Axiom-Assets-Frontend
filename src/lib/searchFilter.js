@@ -3,16 +3,16 @@ const listeners = new Set();
 
 export const defaultFilter = () => ({
 	baseFilter: {
-		sortBy: 'date_created',
-		sortOrder: 'desc',
-		itemType: 'all',
-		searchQuery: '',
-		searchQueryField: 'header',
+		sortBy: "date_created",
+		sortOrder: "desc",
+		itemType: "all",
+		searchQuery: "",
+		searchQueryField: "header",
 	},
 	filter: {
-		and: [{ field: 'visibility', op: 'eq', value: 'public' }],
+		and: [{ field: "visibility", op: "eq", value: "public" }],
 	},
-	sort: [{ field: 'date_created', direction: 'desc' }],
+	sort: [{ field: "date_created", direction: "desc" }],
 	savedOnly: false,
 });
 
@@ -21,9 +21,8 @@ currentFilter = defaultFilter();
 export const getFilter = () => currentFilter;
 
 export const setFilter = (newFilter, { initial = false } = {}) => {
-	currentFilter = newFilter;
-
-	listeners.forEach((callback) => callback(newFilter, { initial }));
+	currentFilter = { ...currentFilter, ...newFilter };
+	listeners.forEach((callback) => callback(currentFilter, { initial }));
 };
 
 export const resetFilter = () => {

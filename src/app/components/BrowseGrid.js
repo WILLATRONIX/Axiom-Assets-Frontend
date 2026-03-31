@@ -1,31 +1,38 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-import { setFilter } from 'lib/searchFilter';
+import { setFilter } from "lib/searchFilter";
+import { useAuth } from "lib/auth/authContext";
 
-import Navbar from 'components/Navbar/Navbar';
-import AssetGrid from 'components/Grid/AssetGrid';
+import Navbar from "components/Navbar/Navbar";
+import AssetGrid from "components/Grid/AssetGrid";
 // import GlbRenderer from 'components/3D/GlbRenderer';
 
-import Box from '@mui/joy/Box';
+import Box from "@mui/joy/Box";
 
 function BrowseGrid({ initialUserData, initialAssetData, initialFilter }) {
+	const { setUserDetails } = useAuth();
+
+	useEffect(() => {
+		setUserDetails(initialUserData);
+	}, [initialUserData]);
+
 	useEffect(() => {
 		if (!initialFilter) return;
 
 		const defaultFilter = {
 			baseFilter: {
-				sortBy: 'date_created',
-				sortOrder: 'desc',
-				itemType: 'all',
-				searchQuery: '',
-				searchQueryField: 'header',
+				sortBy: "date_created",
+				sortOrder: "desc",
+				itemType: "all",
+				searchQuery: "",
+				searchQueryField: "header",
 			},
 			filter: {
-				and: [{ field: 'visibility', op: 'eq', value: 'public' }],
+				and: [{ field: "visibility", op: "eq", value: "public" }],
 			},
-			sort: [{ field: 'date_created', direction: 'desc' }],
+			sort: [{ field: "date_created", direction: "desc" }],
 			savedOnly: false,
 		};
 
@@ -43,35 +50,40 @@ function BrowseGrid({ initialUserData, initialAssetData, initialFilter }) {
 				},
 				sort: initialFilter.sort ?? defaultFilter.sort,
 			},
-			{ initial: true }
+			{ initial: true },
 		);
-	}, [initialFilter]);
+	}, []);
 
 	return (
-		<Box sx={{ backgroundColor: 'var(--joy-palette-background-surface)' }}>
+		<Box sx={{ backgroundColor: "var(--joy-palette-background-surface)" }}>
 			<Box
 				sx={{
-					position: 'sticky',
+					position: "sticky",
 					top: 0,
 					zIndex: 1000,
-					backgroundColor: 'color-mix(in srgb, var(--joy-palette-background-surface) 70%, transparent)',
-					backdropFilter: 'blur(48px)',
+					backgroundColor:
+						"color-mix(in srgb, var(--joy-palette-background-surface) 70%, transparent)",
+					backdropFilter: "blur(48px)",
 				}}
 			>
-				<Navbar variant="browse" initialUserData={initialUserData} />
+				<Navbar context="browse" initialUserData={initialUserData} />
 			</Box>
 
 			{/* <GlbRenderer/> */}
 
 			<Box
 				sx={{
-					display: 'flex',
-					justifyContent: 'center',
+					display: "flex",
+					justifyContent: "center",
 					px: 2,
 					pb: 16,
 				}}
 			>
-				<AssetGrid itemWidth={200} highlightSearchMatch initialAssetData={initialAssetData} />
+				<AssetGrid
+					itemWidth={200}
+					highlightSearchMatch
+					initialAssetData={initialAssetData}
+				/>
 			</Box>
 		</Box>
 	);

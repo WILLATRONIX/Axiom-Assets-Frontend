@@ -1,38 +1,38 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
-import Portal from '@mui/material/Portal';
-import { motion, AnimatePresence } from 'framer-motion';
-import { get } from 'lib/network';
-import PrefetchLink from 'components/Link';
+import Portal from "@mui/material/Portal";
+import { motion, AnimatePresence } from "framer-motion";
+import { get } from "lib/network";
+import PrefetchLink from "components/Link";
 
-import { useNotification } from 'lib/NotificationContext';
+import { useNotification } from "lib/NotificationContext";
 
-import ThumbPreview from 'components/Card/ItemCard/ThumbPreview';
-import SearchMatchText from 'components/Typography/SearchMatchText';
-import RelativeTime from 'components/Typography/RelativeTimeFormat';
+import ThumbPreview from "components/Card/ItemCard/ThumbPreview";
+import SearchMatchText from "components/Typography/SearchMatchText";
+import RelativeTime from "components/Typography/RelativeTimeFormat";
 
-import Card from '@mui/joy/Card';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Divider from '@mui/joy/Divider';
-import Chip from '@mui/joy/Chip';
-import IconButton from '@mui/joy/IconButton';
-import Button from '@mui/joy/Button';
-import MenuButton from '@mui/joy/MenuButton';
-import Dropdown from '@mui/joy/Dropdown';
-import Menu from '@mui/joy/Menu';
-import MenuItem from '@mui/joy/MenuItem';
-import ListItemDecorator from '@mui/joy/ListItemDecorator';
-import Tooltip from '@mui/joy/Tooltip';
+import Card from "@mui/joy/Card";
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import Divider from "@mui/joy/Divider";
+import Chip from "@mui/joy/Chip";
+import IconButton from "@mui/joy/IconButton";
+import Button from "@mui/joy/Button";
+import MenuButton from "@mui/joy/MenuButton";
+import Dropdown from "@mui/joy/Dropdown";
+import Menu from "@mui/joy/Menu";
+import MenuItem from "@mui/joy/MenuItem";
+import ListItemDecorator from "@mui/joy/ListItemDecorator";
+import Tooltip from "@mui/joy/Tooltip";
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
-import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 const ItemCard = ({
 	item,
@@ -56,9 +56,9 @@ const ItemCard = ({
 	const [originOffset, setOriginOffset] = useState(null);
 	const [overlayOffset, setOverlayOffset] = useState(null);
 
-	const [lastCopiedTag, setLastCopiedTag] = useState('');
+	const [lastCopiedTag, setLastCopiedTag] = useState("");
 
-	const shortNames = ['Blueprint', 'Preset', 'Theme', 'Asset Pack', null];
+	const shortNames = ["Blueprint", "Preset", "Theme", "Asset Pack", null];
 
 	const [isSaved, setIsSaved] = useState(item.isSaved);
 	const [saveCount, setSaveCount] = useState(item.saves);
@@ -74,14 +74,19 @@ const ItemCard = ({
 	const expandedCardWidth = 320 + itemDiameter;
 	const expandedCardHeight = 290;
 
-	const metricNameMap = ['Blocks', 'Modified Settings', 'Modified Colours', 'Assets'];
+	const metricNameMap = [
+		"Blocks",
+		"Modified Settings",
+		"Modified Colours",
+		"Assets",
+	];
 
 	const { notify } = useNotification();
 
 	function formatNumberShort(n) {
 		if (n < 1000) return n.toString();
 
-		const units = ['K', 'M', 'B', 'T'];
+		const units = ["K", "M", "B", "T"];
 		let unitIndex = -1;
 		let value = n;
 
@@ -99,16 +104,16 @@ const ItemCard = ({
 		try {
 			const res = await get(`/save/${item.uuid}`);
 			if (res.ok) {
-				notify(`${isSaved ? 'Unsaved' : 'Saved'} "${item.header}"`);
+				notify(`${isSaved ? "Unsaved" : "Saved"} "${item.header}"`);
 				setIsSaved((prev) => !prev);
 				setSaveCount((prev) => {
 					return isSaved ? --prev : ++prev;
 				});
 			} else {
-				notify('You must login to save items', 'danger');
+				notify("You must login to save items", { color: "danger" });
 			}
 		} catch (error) {
-			notify('Failed to save item', 'danger');
+			notify("Failed to save item", { color: "danger" });
 			console.error(error);
 		}
 	};
@@ -117,10 +122,12 @@ const ItemCard = ({
 		try {
 			const downloadURL = `https://api.axiomassets.net/download/${item.uuid}/blueprint.bp`;
 
-			await navigator.clipboard.writeText(`AxiomInstall~DownloadBlueprint~${item.header}~${downloadURL}`);
-			notify('Open Axiom to finish installing the Blueprint.');
+			await navigator.clipboard.writeText(
+				`AxiomInstall~DownloadBlueprint~${item.header}~${downloadURL}`,
+			);
+			notify("Open Axiom to finish installing the Blueprint.");
 		} catch (error) {
-			console.error('Failed to copy theme: ', error);
+			console.error("Failed to copy theme: ", error);
 		}
 	};
 
@@ -202,15 +209,15 @@ const ItemCard = ({
 	const handleCopyTag = async (tag) => {
 		setLastCopiedTag(tag);
 		await navigator.clipboard.writeText(tag);
-		notify('Tag copied to clipboard.');
+		notify("Tag copied to clipboard.");
 	};
 
 	useEffect(() => {
 		const onResize = () => {
 			updateBounds({ refresh: true });
 		};
-		window.addEventListener('resize', onResize);
-		return () => window.removeEventListener('resize', onResize);
+		window.addEventListener("resize", onResize);
+		return () => window.removeEventListener("resize", onResize);
 	}, []);
 
 	useEffect(() => {
@@ -225,12 +232,14 @@ const ItemCard = ({
 			}
 		};
 
-		window.addEventListener('scroll', onScroll);
-		return () => window.removeEventListener('scroll', onScroll);
+		window.addEventListener("scroll", onScroll);
+		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
 	function blendRgbaWithBlack(rgba) {
-		const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+		const match = rgba.match(
+			/rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/,
+		);
 		if (!match) return rgba;
 
 		const [, r, g, b, a] = match.map(Number);
@@ -246,7 +255,7 @@ const ItemCard = ({
 	return (
 		<Box
 			sx={{
-				position: 'relative',
+				position: "relative",
 			}}
 			ref={parentRef}
 		>
@@ -256,45 +265,57 @@ const ItemCard = ({
 				onMouseLeave={() => setIsHovered(false)}
 				component={motion.div}
 				animate={{
-					top: isExpanded && !scrolledWhileExpanded ? overlayOffset?.y - originOffset?.y : 0,
-					left: isExpanded && !scrolledWhileExpanded ? overlayOffset?.x - originOffset?.x : 0,
+					top:
+						isExpanded && !scrolledWhileExpanded
+							? overlayOffset?.y - originOffset?.y
+							: 0,
+					left:
+						isExpanded && !scrolledWhileExpanded
+							? overlayOffset?.x - originOffset?.x
+							: 0,
 					opacity: isExpanded && !scrolledWhileExpanded ? 0 : 1,
 				}}
 				transition={{
-					type: 'spring',
+					type: "spring",
 					stiffness: 250,
 					damping: 30,
 					mass: 0.8,
 				}}
 				sx={{
-					position: 'absolute',
-					borderRadius: 'var(--joy-radius-md)',
+					position: "absolute",
+					borderRadius: "var(--joy-radius-md)",
 					width: itemDiameter,
 					height: baseDiameter + 56,
 					gap: 0.75,
 					pb: 0.5,
-					display: 'flex',
-					flexDirection: 'column',
-					bgcolor: isTheme ? blendRgbaWithBlack(themeData.WindowBg) : 'background.surface',
+					display: "flex",
+					flexDirection: "column",
+					bgcolor: isTheme
+						? blendRgbaWithBlack(themeData.WindowBg)
+						: "background.surface",
 				}}
 			>
 				<AnimatePresence>
 					{isExpanded && (
 						<Portal>
 							<motion.div
-								initial={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
-								animate={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-								exit={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
+								initial={{
+									backgroundColor: "rgba(0, 0, 0, 0)",
+								}}
+								animate={{
+									backgroundColor: "rgba(0, 0, 0, 0.5)",
+								}}
+								exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
 								transition={{
-									type: 'spring',
+									type: "spring",
 									stiffness: 250,
 									damping: 30,
 									mass: 0.8,
 								}}
 								style={{
-									position: 'fixed',
+									position: "fixed",
 									inset: 0,
-									display: 'flex',
+									display: "flex",
 									zIndex: 1300,
 								}}
 								onClick={(e) => {
@@ -322,45 +343,70 @@ const ItemCard = ({
 										left: originOffset?.x,
 									}}
 									transition={{
-										type: 'spring',
+										type: "spring",
 										stiffness: 250,
 										damping: 30,
 										mass: 0.8,
 									}}
 									style={{
-										overflow: 'hidden',
+										overflow: "hidden",
 										borderRadius: 8,
-										position: 'absolute',
+										position: "absolute",
 									}}
 									onClick={(e) => e.stopPropagation()}
 								>
-									<Box sx={{ width: expandedCardWidth, height: expandedCardHeight, bgcolor: '#000' }}>
+									<Box
+										sx={{
+											width: expandedCardWidth,
+											height: expandedCardHeight,
+											bgcolor: "#000",
+										}}
+									>
 										<Card
 											variant="soft"
 											sx={{
 												p: 0,
-												border: 'none',
-												borderRadius: 'md',
-												width: '100%',
-												height: '100%',
+												border: "none",
+												borderRadius: "md",
+												width: "100%",
+												height: "100%",
 												maxHeight: expandedCardHeight,
 												maxWidth: expandedCardWidth,
 												gap: 0,
-												boxShadow: 'lg',
-												display: 'flex',
-												flexDirection: 'column',
-												bgcolor: isTheme && themeData.WindowBg,
+												boxShadow: "lg",
+												display: "flex",
+												flexDirection: "column",
+												bgcolor:
+													isTheme &&
+													themeData.WindowBg,
 											}}
 										>
-											<Box sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-												<Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+											<Box
+												sx={{
+													display: "flex",
+													flexDirection: "row",
+													height: "100%",
+												}}
+											>
+												<Box
+													sx={{
+														display: "flex",
+														flexDirection: "column",
+														flex: 1,
+													}}
+												>
 													<ThumbPreview
-														customOverride={item.thumbnail?.buffer ?? null}
+														customOverride={
+															item.thumbnail
+																?.buffer ?? null
+														}
 														width={itemDiameter}
 														itemType={item.type}
 														itemUUID={item.uuid}
 														presetValue={item.value}
-														aspectRatio={item.image_aspect_ratio}
+														aspectRatio={
+															item.image_aspect_ratio
+														}
 														isCarousel={isCarousel}
 														currentImageIndex={0}
 														themeData={themeData}
@@ -368,27 +414,32 @@ const ItemCard = ({
 													<Box
 														sx={{
 															pl: 0.5,
-															maxWidth: itemDiameter,
+															maxWidth:
+																itemDiameter,
 															py: 0.75,
-															display: 'flex',
-															flexDirection: 'column',
+															display: "flex",
+															flexDirection:
+																"column",
 															flex: 1,
 														}}
 													>
 														<Typography
 															level="body-sm"
 															sx={{
-																color: isTheme ? themeData.Text : 'text.primary',
+																color: isTheme
+																	? themeData.Text
+																	: "text.primary",
 															}}
 															noWrap
 														>
 															{item.header}
 														</Typography>
 														<PrefetchLink
-															href={`/u/${item.publisherData.username}`}
+															href={`/u/${item.publisher_user?.username}`}
 															style={{
-																textDecoration: 'none',
-																width: 'fit-content',
+																textDecoration:
+																	"none",
+																width: "fit-content",
 															}}
 															onClick={(e) => {
 																e.stopPropagation();
@@ -397,73 +448,94 @@ const ItemCard = ({
 															<Typography
 																level="body-xs"
 																sx={{
-																	overflow: 'hidden',
-																	textOverflow: 'ellipsis',
-																	whiteSpace: 'nowrap',
-																	display: 'flex',
-																	alignItems: 'center',
+																	overflow:
+																		"hidden",
+																	textOverflow:
+																		"ellipsis",
+																	whiteSpace:
+																		"nowrap",
+																	display:
+																		"flex",
+																	alignItems:
+																		"center",
 																	gap: 0.25,
-																	color: isTheme && themeData.TextDisabled,
-																	'&:hover': {
+																	color:
+																		isTheme &&
+																		themeData.TextDisabled,
+																	"&:hover": {
 																		color: isTheme
 																			? themeData.Text
-																			: 'text.secondary',
-																		textDecoration: 'underline',
+																			: "text.secondary",
+																		textDecoration:
+																			"underline",
 																	},
 																}}
 															>
-																{item.publisherData.is_creator && <VerifiedIcon />}
-																{item.publisherData.display_name}
+																{item
+																	.publisher_user
+																	.is_creator && (
+																	<VerifiedIcon />
+																)}
+																{
+																	item
+																		.publisher_user
+																		.display_name
+																}
 															</Typography>
 														</PrefetchLink>
 														<Box
 															sx={{
-																mt: 'auto',
+																mt: "auto",
 																gap: 0.25,
-																display: 'flex',
-																flexDirection: 'column',
+																display: "flex",
+																flexDirection:
+																	"column",
 															}}
 														>
 															<Box
 																sx={{
-																	display: 'flex',
-																	alignItems: 'center',
+																	display:
+																		"flex",
+																	alignItems:
+																		"center",
 																}}
 															>
 																<BookmarkBorderOutlinedIcon
 																	sx={{
 																		color: isTheme
 																			? themeData.TextDisabled
-																			: 'text.tertiary',
+																			: "text.tertiary",
 																	}}
 																/>
 																<Tooltip
-																	title={`${saveCount.toLocaleString('en-US')} Saves`}
+																	title={`${saveCount.toLocaleString("en-US")} Saves`}
 																	variant="soft"
 																	placement="top"
 																>
 																	<Typography
 																		level="body-sm"
 																		sx={{
-																			mr: 'auto',
+																			mr: "auto",
 																			color: isTheme
 																				? themeData.TextDisabled
-																				: 'text.tertiary',
+																				: "text.tertiary",
 																		}}
 																	>
-																		{formatNumberShort(saveCount)}
+																		{formatNumberShort(
+																			saveCount,
+																		)}
 																	</Typography>
 																</Tooltip>
 																<DownloadOutlinedIcon
 																	sx={{
 																		color: isTheme
 																			? themeData.TextDisabled
-																			: 'text.tertiary',
+																			: "text.tertiary",
 																	}}
 																/>
 																<Tooltip
 																	title={`${downloadCount.toLocaleString(
-																		'en-US'
+																		"en-US",
 																	)} Downloads`}
 																	variant="soft"
 																	placement="top"
@@ -473,10 +545,12 @@ const ItemCard = ({
 																		sx={{
 																			color: isTheme
 																				? themeData.TextDisabled
-																				: 'text.tertiary',
+																				: "text.tertiary",
 																		}}
 																	>
-																		{formatNumberShort(downloadCount)}
+																		{formatNumberShort(
+																			downloadCount,
+																		)}
 																	</Typography>
 																</Tooltip>
 															</Box>
@@ -485,20 +559,23 @@ const ItemCard = ({
 												</Box>
 												<Box
 													sx={{
-														width: '100%',
+														width: "100%",
 														pt: 1.5,
 														px: 1,
-														display: 'flex',
-														flexDirection: 'column',
+														display: "flex",
+														flexDirection: "column",
 													}}
 												>
 													<Box
 														sx={{
-															maxHeight: expandedCardHeight - 60,
-															overflowY: 'auto',
+															maxHeight:
+																expandedCardHeight -
+																60,
+															overflowY: "auto",
 															gap: 1,
-															display: 'flex',
-															flexDirection: 'column',
+															display: "flex",
+															flexDirection:
+																"column",
 															minWidth: 280,
 														}}
 													>
@@ -506,7 +583,9 @@ const ItemCard = ({
 															<Typography
 																level="title-sm"
 																sx={{
-																	color: isTheme ? themeData.Text : 'text.secondary',
+																	color: isTheme
+																		? themeData.Text
+																		: "text.secondary",
 																}}
 															>
 																Description
@@ -514,74 +593,101 @@ const ItemCard = ({
 															<Typography
 																level="body-sm"
 																sx={{
-																	overflowWrap: 'break-word',
-																	wordBreak: 'break-word',
-																	hyphens: 'auto',
+																	overflowWrap:
+																		"break-word",
+																	wordBreak:
+																		"break-word",
+																	hyphens:
+																		"auto",
 																	color: isTheme
 																		? themeData.TextDisabled
-																		: 'text.tertiary',
+																		: "text.tertiary",
 																}}
 															>
-																{item.desc_value || 'No description.'}
+																{item.desc_value ||
+																	"No description."}
 															</Typography>
 														</Box>
 														<Divider
 															sx={{
-																bgcolor: isTheme && themeData.Separator,
+																bgcolor:
+																	isTheme &&
+																	themeData.Separator,
 															}}
 														/>
-														{item.tags.length > 0 && [
+														{item.tags.length >
+															0 && [
 															<Box key={0}>
-																<Typography level="title-sm">Tags</Typography>
+																<Typography level="title-sm">
+																	Tags
+																</Typography>
 																<Box
 																	sx={{
 																		gap: 0.5,
-																		display: 'flex',
+																		display:
+																			"flex",
 																		pt: 0.5,
-																		flexWrap: 'wrap',
+																		flexWrap:
+																			"wrap",
 																	}}
 																>
-																	{item.tags.map((tag) => (
-																		<Tooltip
-																			key={tag}
-																			title={
-																				lastCopiedTag === tag
-																					? 'Tag Copied'
-																					: 'Copy Tag'
-																			}
-																			size="sm"
-																			variant="soft"
-																			placement="top"
-																		>
-																			<Chip
-																				variant="plain"
+																	{item.tags.map(
+																		(
+																			tag,
+																		) => (
+																			<Tooltip
+																				key={
+																					tag
+																				}
+																				title={
+																					lastCopiedTag ===
+																					tag
+																						? "Tag Copied"
+																						: "Copy Tag"
+																				}
 																				size="sm"
-																				onClick={() => {
-																					handleCopyTag(tag);
-																				}}
-																				sx={{
-																					display: 'inline-flex',
-																					userSelect: 'none',
-																					flexShrink: 0,
-																				}}
+																				variant="soft"
+																				placement="top"
 																			>
-																				{tag}
-																			</Chip>
-																		</Tooltip>
-																	))}
+																				<Chip
+																					variant="plain"
+																					size="sm"
+																					onClick={() => {
+																						handleCopyTag(
+																							tag,
+																						);
+																					}}
+																					sx={{
+																						display:
+																							"inline-flex",
+																						userSelect:
+																							"none",
+																						flexShrink: 0,
+																					}}
+																				>
+																					{
+																						tag
+																					}
+																				</Chip>
+																			</Tooltip>
+																		),
+																	)}
 																</Box>
 															</Box>,
 															<Divider
 																key={1}
 																sx={{
-																	bgcolor: isTheme && themeData.Separator,
+																	bgcolor:
+																		isTheme &&
+																		themeData.Separator,
 																}}
 															/>,
 														]}
 														<Box
 															sx={{
-																display: 'flex',
-																justifyContent: 'space-between',
+																display: "flex",
+																justifyContent:
+																	"space-between",
 															}}
 														>
 															<Typography
@@ -589,44 +695,70 @@ const ItemCard = ({
 																sx={{
 																	color: isTheme
 																		? themeData.TextDisabled
-																		: 'text.secondary',
+																		: "text.secondary",
 																}}
 															>
-																Uploaded <RelativeTime date={item.date_created} />
+																Uploaded{" "}
+																<RelativeTime
+																	date={
+																		item.date_created
+																	}
+																/>
 															</Typography>
 															<Typography
 																level="body-xs"
 																sx={{
 																	color: isTheme
 																		? themeData.TextDisabled
-																		: 'text.secondary',
+																		: "text.secondary",
 																}}
 															>
 																{`${formatNumberShort(item.metric)} ${
-																	metricNameMap[item.type]
+																	metricNameMap[
+																		item
+																			.type
+																	]
 																}`}
 															</Typography>
 														</Box>
 														<Divider
 															sx={{
-																bgcolor: isTheme && themeData.Separator,
+																bgcolor:
+																	isTheme &&
+																	themeData.Separator,
 															}}
 														/>
 													</Box>
-													<Box sx={{ display: 'flex', gap: 1, pb: 1, mt: 'auto' }}>
+													<Box
+														sx={{
+															display: "flex",
+															gap: 1,
+															pb: 1,
+															mt: "auto",
+														}}
+													>
 														{userData.userLoggedIn ? (
 															<Button
 																size="sm"
 																variant="plain"
 																sx={{
-																	bgcolor: isTheme && themeData.WindowBg,
-																	color: isTheme && themeData.Text,
-																	'&:hover': {
-																		bgcolor: isTheme && themeData.ButtonHovered,
+																	bgcolor:
+																		isTheme &&
+																		themeData.WindowBg,
+																	color:
+																		isTheme &&
+																		themeData.Text,
+																	"&:hover": {
+																		bgcolor:
+																			isTheme &&
+																			themeData.ButtonHovered,
 																	},
-																	'&:active': {
-																		bgcolor: isTheme && themeData.ButtonActive,
-																	},
+																	"&:active":
+																		{
+																			bgcolor:
+																				isTheme &&
+																				themeData.ButtonActive,
+																		},
 																}}
 																startDecorator={
 																	isSaved ? (
@@ -635,30 +767,45 @@ const ItemCard = ({
 																		<BookmarkBorderOutlinedIcon />
 																	)
 																}
-																onClick={handleSaveItem}
+																onClick={
+																	handleSaveItem
+																}
 															>
-																{isSaved ? 'saved' : 'save'}
+																{isSaved
+																	? "saved"
+																	: "save"}
 															</Button>
 														) : (
 															<Button
 																size="sm"
 																variant="plain"
 																sx={{
-																	bgcolor: isTheme && themeData.WindowBg,
-																	color: isTheme && themeData.Text,
-																	'&:hover': {
-																		bgcolor: isTheme && themeData.ButtonHovered,
+																	bgcolor:
+																		isTheme &&
+																		themeData.WindowBg,
+																	color:
+																		isTheme &&
+																		themeData.Text,
+																	"&:hover": {
+																		bgcolor:
+																			isTheme &&
+																			themeData.ButtonHovered,
 																	},
-																	'&:active': {
-																		bgcolor: isTheme && themeData.ButtonActive,
-																	},
+																	"&:active":
+																		{
+																			bgcolor:
+																				isTheme &&
+																				themeData.ButtonActive,
+																		},
 																}}
-																startDecorator={<OpenInNewIcon />}
+																startDecorator={
+																	<OpenInNewIcon />
+																}
 																onClick={() => {
 																	window.open(
-																		`/u/${item.publisherData.username}/${item.uuid}`,
-																		'_blank',
-																		'noopener,noreferrer'
+																		`/u/${item.publisher_user?.username}/${item.uuid}`,
+																		"_blank",
+																		"noopener,noreferrer",
 																	);
 																}}
 															>
@@ -668,20 +815,35 @@ const ItemCard = ({
 														<Button
 															size="sm"
 															sx={{
-																width: '100%',
-																bgcolor: isTheme && themeData.Button,
-																color: isTheme && themeData.Text,
-																'&:hover': {
-																	bgcolor: isTheme && themeData.ButtonHovered,
+																width: "100%",
+																bgcolor:
+																	isTheme &&
+																	themeData.Button,
+																color:
+																	isTheme &&
+																	themeData.Text,
+																"&:hover": {
+																	bgcolor:
+																		isTheme &&
+																		themeData.ButtonHovered,
 																},
-																'&:active': {
-																	bgcolor: isTheme && themeData.ButtonActive,
+																"&:active": {
+																	bgcolor:
+																		isTheme &&
+																		themeData.ButtonActive,
 																},
 															}}
-															startDecorator={<DownloadOutlinedIcon />}
+															startDecorator={
+																<DownloadOutlinedIcon />
+															}
 															onClick={() => {
-																setDownloadCount((prev) => ++prev);
-																handleDownload(item);
+																setDownloadCount(
+																	(prev) =>
+																		++prev,
+																);
+																handleDownload(
+																	item,
+																);
 															}}
 														>
 															Download
@@ -698,13 +860,13 @@ const ItemCard = ({
 				</AnimatePresence>
 				<Card
 					variant="plain"
-					orientation={'vertical'}
+					orientation={"vertical"}
 					sx={{
 						height: baseDiameter,
 						gap: 0,
 						p: 0,
-						'&:hover': {
-							cursor: !disableExpandItem && 'pointer',
+						"&:hover": {
+							cursor: !disableExpandItem && "pointer",
 						},
 					}}
 					onClick={(e) => {
@@ -714,13 +876,16 @@ const ItemCard = ({
 				>
 					<Box
 						sx={{
-							display: 'flex',
-							borderRadius: 'var(--joy-radius-md)',
-							overflow: 'hidden',
+							display: "flex",
+							borderRadius: "var(--joy-radius-md)",
+							overflow: "hidden",
 							width: itemDiameter,
 							height: baseDiameter,
-							bgcolor: isTheme && blendRgbaWithBlack(themeData.WindowBg),
-							boxShadow: isHovered && !isTheme && 'var(--joy-shadow-sm)',
+							bgcolor:
+								isTheme &&
+								blendRgbaWithBlack(themeData.WindowBg),
+							boxShadow:
+								isHovered && !isTheme && "var(--joy-shadow-sm)",
 						}}
 					>
 						<ThumbPreview
@@ -736,16 +901,16 @@ const ItemCard = ({
 							currentImageIndex={0}
 							themeData={themeData}
 						/>
-						<Box sx={{ position: 'absolute', bottom: 4, right: 4 }}>
+						<Box sx={{ position: "absolute", bottom: 4, right: 4 }}>
 							{shortTypeName && (
 								<Chip
 									size="sm"
 									sx={{
-										borderRadius: 'sm',
-										maxHeight: '24px',
+										borderRadius: "sm",
+										maxHeight: "24px",
 										bgcolor: isTheme
 											? themeData.WindowBg
-											: 'color-mix(in srgb, var(--joy-palette-neutral-softBg) 60%, transparent)',
+											: "color-mix(in srgb, var(--joy-palette-neutral-softBg) 60%, transparent)",
 										color: isTheme && themeData.Text,
 									}}
 								>
@@ -757,10 +922,10 @@ const ItemCard = ({
 				</Card>
 				<Box
 					sx={{
-						display: 'flex',
-						alignItems: 'start',
-						justifyContent: 'space-between',
-						width: '100%',
+						display: "flex",
+						alignItems: "start",
+						justifyContent: "space-between",
+						width: "100%",
 						pl: 0.5,
 						pr: 0,
 						gap: isHovered ? 0.5 : 0,
@@ -768,40 +933,45 @@ const ItemCard = ({
 				>
 					<Box
 						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							justifyContent: 'center',
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
 							minWidth: 0,
 						}}
 					>
 						<PrefetchLink
-							href={`/u/${item.publisherData.username}/${item.uuid}`}
+							href={`/u/${item.publisher_user?.username}/${item.uuid}`}
 							style={{
-								textDecoration: 'none',
-								width: '100%',
-								display: 'block',
+								textDecoration: "none",
+								width: "100%",
+								display: "block",
 							}}
 							onClick={(e) => e.stopPropagation()}
 						>
 							<Typography
 								level="body-sm"
 								sx={{
-									color: isTheme ? themeData.Text : 'text.primary',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
+									color: isTheme
+										? themeData.Text
+										: "text.primary",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
 									mr: 0.5,
-									'&:hover': {
-										color: isTheme ? themeData.Text : 'text.primary',
-										textDecoration: 'underline',
+									"&:hover": {
+										color: isTheme
+											? themeData.Text
+											: "text.primary",
+										textDecoration: "underline",
 									},
 								}}
 							>
 								<SearchMatchText
 									highlight={
-										highlightSearchMatch && baseFilter.searchQueryField === 'header'
+										highlightSearchMatch &&
+										baseFilter.searchQueryField === "header"
 											? baseFilter.searchQuery
-											: ''
+											: ""
 									}
 									text={item.header}
 								/>
@@ -809,10 +979,10 @@ const ItemCard = ({
 						</PrefetchLink>
 
 						<PrefetchLink
-							href={`/u/${item.publisherData.username}`}
+							href={`/u/${item.publisher_user?.username}`}
 							style={{
-								textDecoration: 'none',
-								width: 'fit-content',
+								textDecoration: "none",
+								width: "fit-content",
 							}}
 							onClick={(e) => {
 								e.stopPropagation();
@@ -821,27 +991,33 @@ const ItemCard = ({
 							<Typography
 								level="body-xs"
 								sx={{
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-									display: 'flex',
-									alignItems: 'center',
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+									display: "flex",
+									alignItems: "center",
 									gap: 0.25,
 									color: isTheme && themeData.TextDisabled,
-									'&:hover': {
-										color: isTheme ? themeData.Text : 'text.secondary',
-										textDecoration: 'underline',
+									"&:hover": {
+										color: isTheme
+											? themeData.Text
+											: "text.secondary",
+										textDecoration: "underline",
 									},
 								}}
 							>
-								{item.publisherData.is_creator && <VerifiedIcon />}
+								{item.publisher_user?.is_creator && (
+									<VerifiedIcon />
+								)}
 								<SearchMatchText
 									highlight={
-										highlightSearchMatch && baseFilter.searchQueryField === 'publisher.display_name'
+										highlightSearchMatch &&
+										baseFilter.searchQueryField ===
+											"publisher.display_name"
 											? baseFilter.searchQuery
-											: ''
+											: ""
 									}
-									text={item.publisherData.display_name}
+									text={item.publisher_user?.display_name}
 								/>
 							</Typography>
 						</PrefetchLink>
@@ -851,23 +1027,33 @@ const ItemCard = ({
 							<Dropdown>
 								<MenuButton
 									slots={{ root: IconButton }}
-									slotProps={{ root: { variant: 'soft', color: 'neutral' } }}
+									slotProps={{
+										root: {
+											variant: "soft",
+											color: "neutral",
+										},
+									}}
 									onClick={(e) => {
 										e.stopPropagation();
 									}}
 									sx={{
-										boxShadow: !isTheme && 'var(--joy-shadow-sm)',
+										boxShadow:
+											!isTheme && "var(--joy-shadow-sm)",
 										bgcolor: isTheme && themeData.WindowBg,
-										'&:hover': {
-											bgcolor: isTheme && themeData.Button,
+										"&:hover": {
+											bgcolor:
+												isTheme && themeData.Button,
 										},
 									}}
 								>
 									<MoreVertIcon
 										sx={{
-											color: isTheme && themeData.TextDisabled,
-											'&:hover': {
-												color: isTheme && themeData.Text,
+											color:
+												isTheme &&
+												themeData.TextDisabled,
+											"&:hover": {
+												color:
+													isTheme && themeData.Text,
 											},
 										}}
 									/>
@@ -877,28 +1063,33 @@ const ItemCard = ({
 									variant="soft"
 									sx={{
 										bgcolor: isTheme && themeData.WindowBg,
-										'& .MuiMenuItem-root': {
+										"& .MuiMenuItem-root": {
 											color: isTheme && themeData.Text,
-											'&:hover': {
+											"&:hover": {
 												backgroundColor: isTheme
 													? themeData.ButtonHovered
-													: 'var(--joy-palette-neutral-softHoverBg)',
+													: "var(--joy-palette-neutral-softHoverBg)",
 											},
-											'&:active': {
+											"&:active": {
 												backgroundColor: isTheme
 													? themeData.ButtonActive
-													: 'var(--joy-palette-neutral-softActiveBg)',
+													: "var(--joy-palette-neutral-softActiveBg)",
 											},
 										},
-										'& .danger-bg-override': {
-											backgroundColor: 'var(--joy-palette-danger-softBg)',
-											color: 'var(--joy-palette-danger-plainColor)',
-											'& * > *': { color: 'var(--joy-palette-danger-plainColor)' },
-											'&:hover': {
-												backgroundColor: 'var(--joy-palette-danger-softHoverBg)',
+										"& .danger-bg-override": {
+											backgroundColor:
+												"var(--joy-palette-danger-softBg)",
+											color: "var(--joy-palette-danger-plainColor)",
+											"& * > *": {
+												color: "var(--joy-palette-danger-plainColor)",
 											},
-											'&:active': {
-												backgroundColor: 'var(--joy-palette-danger-softActiveBg)',
+											"&:hover": {
+												backgroundColor:
+													"var(--joy-palette-danger-softHoverBg)",
+											},
+											"&:active": {
+												backgroundColor:
+													"var(--joy-palette-danger-softActiveBg)",
 											},
 										},
 									}}
@@ -908,7 +1099,10 @@ const ItemCard = ({
 
 										return (
 											<MenuItem
-												className={option.color === 'danger' && 'danger-bg-override'}
+												className={
+													option.color === "danger" &&
+													"danger-bg-override"
+												}
 												key={option.label}
 												variant="neutral"
 												onClick={(e) => {
@@ -916,14 +1110,18 @@ const ItemCard = ({
 													option.action(item);
 												}}
 												sx={{
-													color: isTheme && themeData.Text,
+													color:
+														isTheme &&
+														themeData.Text,
 												}}
 											>
 												<ListItemDecorator>
 													{Icon && (
 														<Icon
 															sx={{
-																color: isTheme && themeData.Text,
+																color:
+																	isTheme &&
+																	themeData.Text,
 															}}
 														/>
 													)}

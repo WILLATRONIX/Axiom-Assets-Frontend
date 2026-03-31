@@ -41,7 +41,7 @@ const formatChapterHash = (input) => {
 };
 
 export default function Page({}) {
-	const [selectedPage, setSelectedPage] = useState("");
+	const [selectedPage, setSelectedPage] = useState("Rules");
 	const [pageContent, setPageContent] = useState("");
 
 	const getPagePath = (pageName, nodes = pageViews, parentPath = "") => {
@@ -89,9 +89,6 @@ export default function Page({}) {
 		let cancelled = false;
 
 		const pagePath = getPagePath(selectedPage);
-
-		console.log(selectedPage);
-		console.log(pagePath);
 
 		fetch(
 			`https://raw.githubusercontent.com/WILLATRONIX/Axiom-Assets-Markdown/refs/heads/main/help-pages/${pagePath}.md`,

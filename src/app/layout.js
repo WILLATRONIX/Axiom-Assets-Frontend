@@ -76,9 +76,9 @@ export default function RootLayout({ children }) {
 					type="image/webp"
 					href="https://cdn.axiomassets.net/defaults/icons/16.webp"
 				/>
-				<InitColorSchemeScript defaultMode="dark" />
 			</head>
 			<body>
+				<InitColorSchemeScript defaultMode="dark" />
 				<CssBaseline />
 				<GoogleOAuthProvider
 					clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID}

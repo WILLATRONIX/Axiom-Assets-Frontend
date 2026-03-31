@@ -19,7 +19,7 @@ async function getItemByUUID(uuid) {
 			{ ssr: true },
 		);
 
-		return res.data.assetData;
+		return res.data;
 	} catch (error) {
 		console.error(error);
 		notFound();

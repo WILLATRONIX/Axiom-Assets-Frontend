@@ -1,23 +1,30 @@
-import { Fragment, useState, memo, useMemo } from 'react';
+import { Fragment, useState, memo, useMemo } from "react";
 
-import Cropper from 'react-easy-crop';
+import Cropper from "react-easy-crop";
 
-import Divider from '@mui/joy/Divider';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Card from '@mui/joy/Card';
-import AspectRatio from '@mui/joy/AspectRatio';
-import Tooltip from '@mui/joy/Tooltip';
-import IconButton from '@mui/joy/IconButton';
+import Divider from "@mui/joy/Divider";
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import AspectRatio from "@mui/joy/AspectRatio";
+import Tooltip from "@mui/joy/Tooltip";
+import IconButton from "@mui/joy/IconButton";
 
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
-const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditClick }) => {
+const UploadPreview = ({
+	style,
+	itemData,
+	isSelected,
+	onClick,
+	onDelete,
+	onEditClick,
+}) => {
 	const supressCall = () => {};
 
 	return (
-		<div style={{ ...style, marginLeft: '10px', marginTop: '10px' }}>
+		<div style={{ ...style, marginLeft: "10px", marginTop: "10px" }}>
 			<Card
 				variant="outlined"
 				sx={{
@@ -25,12 +32,16 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 					height: 196,
 					p: 0,
 					py: 0,
-					position: 'relative',
-					'&:hover': {
-						border: '1px solid var(--joy-palette-primary-500)',
+					position: "relative",
+					"&:hover": {
+						border: "1px solid var(--joy-palette-primary-500)",
 					},
-					border: isSelected === true && '1px solid var(--joy-palette-primary-500)',
-					outline: isSelected === true && '2px solid var(--joy-palette-primary-500)',
+					border:
+						isSelected === true &&
+						"1px solid var(--joy-palette-primary-500)",
+					outline:
+						isSelected === true &&
+						"2px solid var(--joy-palette-primary-500)",
 				}}
 			>
 				<Box
@@ -38,21 +49,27 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 					sx={{
 						width: 160 - 2,
 						height: 220 - 2,
-						position: 'absolute',
+						position: "absolute",
 						zIndex: 1,
-						borderRadius: 'md',
+						borderRadius: "md",
 						opacity: 0,
-						justifyContent: 'end',
-						display: 'flex',
-						'&:hover': {
+						justifyContent: "end",
+						display: "flex",
+						"&:hover": {
 							opacity: 1,
-							cursor: 'pointer',
+							cursor: "pointer",
 						},
 					}}
 				>
-					<Box sx={{ m: 0.5, display: 'flex', flexDirection: 'column' }}>
+					<Box
+						sx={{
+							m: 0.5,
+							display: "flex",
+							flexDirection: "column",
+						}}
+					>
 						<IconButton
-							sx={{ mb: 1, borderRadius: '0.5rem' }}
+							sx={{ mb: 1, borderRadius: "0.5rem" }}
 							variant="soft"
 							color="primary"
 							onClick={(event) => {
@@ -63,7 +80,7 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 							<EditOutlinedIcon />
 						</IconButton>
 						<IconButton
-							sx={{ borderRadius: '0.5rem' }}
+							sx={{ borderRadius: "0.5rem" }}
 							variant="soft"
 							color="danger"
 							onClick={(event) => {
@@ -77,35 +94,42 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 				</Box>
 				<Box
 					sx={{
-						width: '100%',
-						display: 'flex',
-						flexDirection: 'column',
-						gap: '1rem',
+						width: "100%",
+						display: "flex",
+						flexDirection: "column",
+						gap: "1rem",
 					}}
 				>
 					<Box
 						sx={{
-							display: 'flex',
-							flexDirection: 'column',
+							display: "flex",
+							flexDirection: "column",
 						}}
 					>
 						<AspectRatio
 							ratio="1"
 							sx={{
-								minWidth: '100px',
+								minWidth: "100px",
 								flexGrow: 1,
-								borderRadius: '8px 8px 0 0',
-								position: 'relative',
+								borderRadius: "8px 8px 0 0",
+								position: "relative",
 							}}
 						>
 							<Cropper
-								image={itemData.thumbnail?.buffer || itemData.thumbnail}
+								image={
+									itemData.thumbnail?.buffer ||
+									itemData.thumbnail
+								}
 								crop={
 									itemData.thumbnail.crop
 										? {
-												x: itemData.thumbnail.crop.x * (158 / 240),
-												y: itemData.thumbnail.crop.y * (158 / 240),
-										  }
+												x:
+													itemData.thumbnail.crop.x *
+													(158 / 240),
+												y:
+													itemData.thumbnail.crop.y *
+													(158 / 240),
+											}
 										: { x: 0, y: 0 }
 								}
 								zoom={itemData.thumbnail.zoom || 1}
@@ -119,12 +143,13 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 								showGrid={false}
 								style={{
 									mediaStyle: {
-										backgroundColor: 'var(--joy-palette-background-surface)',
+										backgroundColor:
+											"var(--joy-palette-background-surface)",
 									},
 									cropAreaStyle: {
-										border: 'none',
-										borderRadius: '0.5rem',
-										boxShadow: 'none',
+										border: "none",
+										borderRadius: "0.5rem",
+										boxShadow: "none",
 									},
 								}}
 							/>
@@ -132,8 +157,8 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 						<Divider />
 						<Box
 							sx={{
-								display: 'flex',
-								flexDirection: 'column',
+								display: "flex",
+								flexDirection: "column",
 								flexShrink: 1,
 								px: 1.5,
 								mt: 0.5,
@@ -141,18 +166,22 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 						>
 							<Box
 								sx={{
-									display: 'flex',
-									flexDirection: 'row',
+									display: "flex",
+									flexDirection: "row",
 								}}
 							>
-								<Tooltip variant="outlined" placement="top" arrow>
+								<Tooltip
+									variant="outlined"
+									placement="top"
+									arrow
+								>
 									<Typography
 										level="body-md"
 										sx={{
-											whiteSpace: 'nowrap',
-											textOverflow: 'ellipsis',
-											overflow: 'hidden',
-											maxWidth: '184px',
+											whiteSpace: "nowrap",
+											textOverflow: "ellipsis",
+											overflow: "hidden",
+											maxWidth: "184px",
 										}}
 									>
 										{itemData?.header}
@@ -168,5 +197,7 @@ const UploadPreview = ({ style, itemData, isSelected, onClick, onDelete, onEditC
 };
 
 export default memo(UploadPreview, (prev, next) => {
-	return prev.isSelected === next.isSelected;
+	return (
+		prev.isSelected === next.isSelected && prev.itemData === next.itemData
+	);
 });

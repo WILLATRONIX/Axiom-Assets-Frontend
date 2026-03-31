@@ -32,9 +32,9 @@ import ShareIcon from "@mui/icons-material/ShareOutlined";
 
 function AssetGrid({
 	itemWidth = 200,
-	fetchItems = false,
+	fetchItems = true,
 	highlightSearchMatch = false,
-	defaultItems = [],
+	items: defaultItems = null,
 	CustomItemComponent = null,
 	CustomItemProps = null,
 	disableExpandItem = false,
@@ -325,7 +325,7 @@ function AssetGrid({
 	};
 
 	const fetchData = useCallback(async () => {
-		if (isLoading || hasNoItems || hasDefaultAssets) return;
+		if (isLoading || hasNoItems) return;
 
 		const adjustedFetchLimit =
 			fetchItemsLimit + assets.length > totalItemLimit
@@ -399,7 +399,7 @@ function AssetGrid({
 	}, [initialAssetData?.count, hasInitialAssets]);
 
 	useEffect(() => {
-		if (defaultItems.length > 0) {
+		if (defaultItems !== null) {
 			setAssets(defaultItems);
 			setTotalItemCount(defaultItems.length);
 		}

@@ -152,10 +152,6 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 
 	const [loading, setLoading] = useState(false);
 
-	const [windowWidth, setWindowWidth] = useState(0);
-	const [windowHeight, setWindowHeight] = useState(0);
-
-	const [selectedAsset, setSelectedAsset] = useState({});
 	const [activeAsset, setActiveAsset] = useState({});
 	const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -165,27 +161,6 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 	const fileInputRef = useRef(null);
 	const { notify } = useNotification();
 	const megabyte = 1000000;
-
-	useEffect(() => {
-		let timeout;
-		const handleResize = () => {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				const navbarHeight = 230;
-				setWindowWidth(window.innerWidth);
-				setWindowHeight(window.innerHeight - navbarHeight);
-			}, 50);
-		};
-
-		handleResize();
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const columnCount = useMemo(
-		() => Math.max(1, Math.floor(windowWidth / 160)) - 1,
-		[windowWidth],
-	);
 
 	const handleNewFile = (e) => {
 		setLoading(true);
@@ -450,26 +425,25 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 		onConfirm(itemData);
 	};
 
-	const handleSelectAsset = (item) => {
-		setSelectedAsset(item);
-	};
-
-	const recalculateTotalFileSize = () => {
-		const total = itemData.reduce((sum, item) => {
-			return sum + item.fileSize + (item.thumbnail?.fileSize || 0);
-		}, 0);
-
+	const recalculateTotalFileSize = (items = itemData) => {
+		const total = items.reduce(
+			(sum, item) =>
+				sum + item.fileSize + (item.thumbnail?.fileSize || 0),
+			0,
+		);
 		setTotalFileSize(total);
 	};
 
 	const handleEditAsset = (item) => {
-		const index = itemData.findIndex((i) => i.fileName === item.fileName);
-
-		if (index !== -1) {
-			itemData[index] = item;
-		}
-
-		recalculateTotalFileSize();
+		setItemData((prevItems) => {
+			const newItems = prevItems.map((i) =>
+				i.fileName === item.fileName && i.fileSize === item.fileSize
+					? item
+					: i,
+			);
+			recalculateTotalFileSize(newItems);
+			return newItems;
+		});
 	};
 
 	const handleOpenEditMenu = (item) => {
@@ -478,14 +452,17 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 	};
 
 	function handleDeleteAsset(item) {
-		const index = itemData.findIndex((i) => i.fileName === item.fileName);
-
-		if (index !== -1) {
-			itemData.splice(index, 1);
-			setItemData([...itemData]);
-
-			recalculateTotalFileSize();
-		}
+		setItemData((prevItems) => {
+			const newItems = prevItems.filter(
+				(i) =>
+					!(
+						i.fileName === item.fileName &&
+						i.fileSize === item.fileSize
+					),
+			);
+			recalculateTotalFileSize(newItems);
+			return newItems;
+		});
 	}
 
 	return (
@@ -610,12 +587,13 @@ const UploadFile = ({ uploadType, onConfirm, defaultValue }) => {
 						<Box sx={{ overflow: "auto" }}>
 							<AssetGrid
 								itemWidth={160}
-								defaultItems={itemData}
+								items={itemData}
 								fetchItems={false}
 								disableExpandItem
 								CustomItemComponent={UploadPreview}
 								CustomItemProps={{
 									onDelete: handleDeleteAsset,
+									onEditClick: handleOpenEditMenu,
 								}}
 							/>
 						</Box>

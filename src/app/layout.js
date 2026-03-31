@@ -7,6 +7,7 @@ import { AuthProvider } from "lib/auth/authContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { NotificationProvider } from "lib/NotificationContext";
 import { ContextMenuProvider } from "lib/MenuContext";
+import { Suspense } from "react";
 
 export async function generateMetadata() {
 	const dateCreated = formatDistanceToNow(
@@ -87,7 +88,7 @@ export default function RootLayout({ children }) {
 						<NotificationProvider>
 							<ContextMenuProvider>
 								<CssVarsProvider defaultMode="dark">
-									{children}
+									<Suspense>{children}</Suspense>
 								</CssVarsProvider>
 							</ContextMenuProvider>
 						</NotificationProvider>

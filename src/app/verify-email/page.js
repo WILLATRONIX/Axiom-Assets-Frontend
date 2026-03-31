@@ -27,8 +27,11 @@ import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function LoginPage() {
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const hasToken = searchParams.has("token");
+
 	const [emailArray, setEmailArray] = useState([]);
-	const [secondaryEmailArray, setSecondaryEmailArray] = useState([]);
 
 	const [userData, setUserData] = useState(null);
 
@@ -43,11 +46,7 @@ export default function LoginPage() {
 	const { user, loading, logout } = useAuth();
 	const { notify } = useNotification();
 
-	const router = useRouter();
-	const searchParams = useSearchParams();
-
 	const hasUnverifiedEmail = emailArray?.some((e) => !e.verified);
-	const hasToken = searchParams.has("token");
 
 	const verifyToken = async () => {
 		if (user && !loading) {

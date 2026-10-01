@@ -34,6 +34,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { defaultFilter } from "lib/searchFilter";
 
 const filter = createFilterOptions();
 
@@ -591,7 +592,12 @@ export default function MoreFilterModal({ open, setOpen }) {
 	}
 
 	const handleClose = (group = rootGroup) => {
-		const filter = transformGroupToFilter(group) ?? {};
+		let filter = transformGroupToFilter(group);
+
+		if (Object.keys(filter).length === 0) {
+			filter = defaultFilter().filter;
+		}
+
 		const sortedSorts = sorts.filter((s) => s.field);
 
 		const result = {
